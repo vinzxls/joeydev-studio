@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
+
+        // Percayai header proxy (Codespaces, dan nanti hosting di belakang
+        // reverse proxy/CDN) agar URL aset di-generate dengan skema https.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

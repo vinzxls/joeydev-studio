@@ -6,6 +6,9 @@
             "version": "22"
         }
     },
+    "containerEnv": {
+        "XDEBUG_MODE": "off"
+    },
     "forwardPorts": [8000],
     "portsAttributes": {
         "8000": {
