@@ -15,7 +15,7 @@
     {{-- Splash pembuka: sapaan 10 bahasa, keluar dengan efek tirai terangkat --}}
     @if (request()->routeIs('home'))
         <div id="splash" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#eceafd]">
-            <p id="splash-word" class="text-4xl font-extrabold text-violet-500 sm:text-6xl"><span id="splash-text" style="display:inline-block">Halo</span><span class="text-slate-900">.</span></p>
+            <p id="splash-word" class="text-4xl font-extrabold text-violet-500 sm:text-6xl"><span id="splash-text" style="display:inline-block">Halo</span></p>
         </div>
         <style>
             #splash {
