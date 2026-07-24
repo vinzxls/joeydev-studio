@@ -15,6 +15,16 @@ Dibangun dengan **Laravel 12 + MySQL + Blade + Tailwind CSS 4 (Vite)**.
 - **Dashboard admin** — statistik order/pendapatan/rating, kelola order & status (dengan riwayat), subject & harga dasar, multiplier & add-on, moderasi review
 - **Keamanan** — rate limiting form order/tracking/login, validasi tipe & ukuran upload, snapshot harga per order
 
+## Demo Cepat via GitHub Codespaces
+
+1. Buka repo ini → tombol **Code** → tab **Codespaces** → **Create codespace on main**
+2. Tunggu setup otomatis selesai (composer, npm build, migrate + seed — pakai SQLite)
+3. Jalankan `php artisan serve`
+4. Di panel **PORTS**: klik kanan port 8000 → **Port Visibility** → **Public**
+5. Bagikan URL yang muncul — siapa pun bisa membuka demo-nya
+
+> Catatan: Codespace mati otomatis saat idle (±30 menit). Ini untuk demo, bukan hosting produksi.
+
 ## Menjalankan (Laragon / lokal)
 
 ```bash

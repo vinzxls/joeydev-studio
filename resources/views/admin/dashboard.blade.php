@@ -71,11 +71,11 @@
             <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 class="font-extrabold text-slate-900">6 Bulan Terakhir<span class="text-sky-500">.</span></h2>
                 <ul class="mt-4 space-y-2.5 text-sm">
-                    @forelse ($monthly as $row)
+                    @forelse ($monthly as $ym => $total)
                         <li class="flex items-center gap-2">
-                            <span class="w-16 font-medium text-slate-500">{{ $row->ym }}</span>
-                            <span class="h-2.5 rounded-full bg-gradient-to-r from-violet-500 to-indigo-400" style="width: {{ min(100, $row->total * 10) }}%"></span>
-                            <span class="font-extrabold text-slate-900">{{ $row->total }}</span>
+                            <span class="w-16 font-medium text-slate-500">{{ $ym }}</span>
+                            <span class="h-2.5 rounded-full bg-gradient-to-r from-violet-500 to-indigo-400" style="width: {{ min(100, $total * 10) }}%"></span>
+                            <span class="font-extrabold text-slate-900">{{ $total }}</span>
                         </li>
                     @empty
                         <li class="text-slate-400">Belum ada data.</li>

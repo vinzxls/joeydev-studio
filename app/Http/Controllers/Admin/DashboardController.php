@@ -33,13 +33,12 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $monthly = Order::select(
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as ym"),
-            DB::raw('COUNT(*) as total'),
-        )
-            ->where('created_at', '>=', now()->subMonths(6)->startOfMonth())
-            ->groupBy('ym')->orderBy('ym')
-            ->get();
+        // Dihitung di PHP agar netral driver (jalan di MySQL maupun SQLite)
+        $monthly = Order::where('created_at', '>=', now()->subMonths(6)->startOfMonth())
+            ->pluck('created_at')
+            ->groupBy(fn ($date) => $date->format('Y-m'))
+            ->map->count()
+            ->sortKeys();
 
         return view('admin.dashboard', compact('stats', 'recentOrders', 'topSubjects', 'monthly'));
     }
