@@ -12,11 +12,31 @@
 </head>
 <body class="min-h-screen bg-[#f7f8fc] font-sans text-slate-800 antialiased">
 
-    {{-- Splash pembuka ala referensi: sapaan berganti bahasa, tampil tiap kali beranda dibuka --}}
+    {{-- Splash pembuka: sapaan 10 bahasa, keluar dengan efek tirai terangkat --}}
     @if (request()->routeIs('home'))
         <div id="splash" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#eceafd]">
-            <p id="splash-word" class="text-4xl font-extrabold text-violet-500 sm:text-6xl">Halo<span class="text-slate-900">.</span></p>
+            <p id="splash-word" class="text-4xl font-extrabold text-violet-500 sm:text-6xl"><span id="splash-text" style="display:inline-block">Halo</span><span class="text-slate-900">.</span></p>
         </div>
+        <style>
+            #splash {
+                transition: transform .7s cubic-bezier(.76, 0, .24, 1), border-radius .7s cubic-bezier(.76, 0, .24, 1);
+                will-change: transform;
+            }
+            #splash.splash-exit {
+                transform: translateY(-100%);
+                border-bottom-left-radius: 50% 10rem;
+                border-bottom-right-radius: 50% 10rem;
+            }
+            /* Konten tampil secara default; splash hanya menyembunyikannya sementara.
+               Jika transisi gagal karena alasan apa pun, konten tetap terlihat. */
+            main, footer {
+                transition: opacity .6s ease .15s, transform .7s cubic-bezier(.22, 1, .36, 1) .15s;
+            }
+            body.splash-active main, body.splash-active footer {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+        </style>
     @endif
 
     {{-- Navbar pill melayang: atas di desktop, bawah di mobile --}}
@@ -76,20 +96,37 @@
         (function () {
             const splash = document.getElementById('splash');
             if (!splash) return;
-            const word = document.getElementById('splash-word');
-            const greets = ['Halo', 'Hello', 'こんにちは', '你好', 'Bonjour'];
+            document.body.classList.add('splash-active');
+
+            const text = document.getElementById('splash-text');
+            const greets = ['Halo', 'Hello', 'こんにちは', '안녕하세요', '你好', 'Bonjour', 'Hola', 'Ciao', 'Hallo', 'Olá'];
             let i = 0;
-            const tick = setInterval(() => {
+
+            function next() {
                 i++;
-                if (i >= greets.length) {
-                    clearInterval(tick);
-                    splash.style.transition = 'opacity .45s ease';
-                    splash.style.opacity = '0';
-                    setTimeout(() => splash.remove(), 500);
-                    return;
-                }
-                word.innerHTML = greets[i] + '<span class="text-slate-900">.</span>';
-            }, 350);
+                if (i >= greets.length) return finish();
+                text.textContent = greets[i];
+                // Tiap kata masuk dengan slide-fade singkat agar pergantian terasa halus
+                text.animate(
+                    [{ opacity: .15, transform: 'translateY(12px)' }, { opacity: 1, transform: 'translateY(0)' }],
+                    { duration: 140, easing: 'ease-out' },
+                );
+                setTimeout(next, i === 1 ? 220 : 150);
+            }
+
+            function finish() {
+                // Tirai terangkat ke atas, konten beranda naik masuk
+                splash.classList.add('splash-exit');
+                document.body.classList.remove('splash-active');
+                setTimeout(() => splash.remove(), 750);
+            }
+
+            setTimeout(next, 420);
+
+            // Failsafe: apa pun yang terjadi, splash tidak boleh menutupi halaman selamanya
+            setTimeout(() => {
+                if (document.getElementById('splash')) finish();
+            }, 5000);
         })();
     </script>
     @stack('scripts')
