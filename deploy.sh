@@ -16,7 +16,12 @@ if [ ! -f .env ]; then
 fi
 
 echo "==> Install dependensi PHP (tanpa dev)..."
-composer install --no-dev --optimize-autoloader --no-interaction
+# --no-scripts: shared hosting (Hostinger) menonaktifkan proc_open sehingga
+# Composer tidak bisa memanggil artisan. Script-nya dijalankan manual di bawah.
+composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+echo "==> Deteksi paket Laravel..."
+php artisan package:discover
 
 if [ "$FIRST_RUN" = true ]; then
     echo "==> Generate APP_KEY..."

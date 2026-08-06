@@ -8,6 +8,9 @@
 .env
 .env.backup
 .env.production
+/joeydevsecurity.txt
+*secret*.txt
+*token*.txt
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
