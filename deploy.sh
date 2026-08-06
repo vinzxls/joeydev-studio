@@ -31,7 +31,9 @@ if [ "$FIRST_RUN" = true ]; then
     php artisan migrate --seed --force
 
     echo "==> Symlink storage publik..."
-    php artisan storage:link || true
+    # Dibuat manual: exec()/symlink() sering dinonaktifkan di shared hosting,
+    # sehingga `artisan storage:link` gagal.
+    [ -e public/storage ] || ln -s ../storage/app/public public/storage
 else
     echo "==> Migrasi database..."
     php artisan migrate --force
