@@ -13,6 +13,6 @@ return [
      */
     'whatsapp_message' => env(
         'WHATSAPP_MESSAGE',
-        'Halo JoeyDev Studio, saya ingin bertanya tentang jasa pembuatan software.',
+        'Halo, JoeyDev Studio. Saya ingin bertanya tentang jasa pembuatan software.',
     ),
 ];
