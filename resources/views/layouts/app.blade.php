@@ -101,7 +101,7 @@
 
     <footer class="mt-20 border-t border-slate-200 bg-white pb-24 md:pb-0">
         <div class="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-8 text-center text-sm text-slate-500 sm:flex-row sm:justify-between sm:text-left">
-            <p><span class="font-extrabold text-slate-900">JD<span class="text-rose-500">.</span></span> &copy; {{ date('Y') }} JoeyDev Studio — Jasa pembuatan software, project IT &amp; mentoring pemrograman.</p>
+            <p><span class="font-extrabold text-slate-900">JD<span class="text-rose-500">.</span></span> &copy; {{ date('Y') }} JoeyDev Studio — Jasa pembuatan software, project IT &amp; desain UI/UX.</p>
             <span class="flex items-center gap-4">
                 @if ($waNumber !== '')
                     <a href="https://wa.me/{{ $waNumber }}?text={{ rawurlencode(config('contact.whatsapp_message')) }}"

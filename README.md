@@ -1,6 +1,6 @@
 # JoeyDev Studio — Sistem Pemesanan Jasa Software & Project IT
 
-Platform pemesanan jasa pembuatan software (website, aplikasi mobile, ML/data science, IoT, jaringan, mentoring pemrograman, dokumen teknis) dengan estimasi harga otomatis, tracking progress tanpa akun, dan rating/testimoni.
+Platform pemesanan jasa pembuatan software (website, aplikasi mobile, ML/data science, IoT, jaringan, desain UI/UX, dokumen teknis) dengan estimasi harga otomatis, tracking progress tanpa akun, dan rating/testimoni.
 
 Dibangun dengan **Laravel 12 + MySQL + Blade + Tailwind CSS 4 (Vite)**.
 
