@@ -132,6 +132,29 @@
                     <button class="w-full rounded-full bg-slate-900 py-3 text-sm font-bold text-white transition hover:bg-slate-700">Simpan Pembayaran</button>
                 </form>
             </section>
+
+            <section class="rounded-3xl border border-rose-200 bg-rose-50/50 p-6">
+                <h2 class="font-extrabold text-rose-700">Hapus Order<span class="text-rose-400">.</span></h2>
+                <p class="mt-2 text-sm text-rose-700/80">
+                    Menghapus order ini beserta riwayat status, add-on, review, dan file lampirannya.
+                    Tindakan ini permanen dan tidak bisa dibatalkan.
+                </p>
+                <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="mt-4 space-y-3"
+                      onsubmit="return confirm('Hapus permanen order {{ $order->order_code }}? Tindakan ini tidak bisa dibatalkan.')">
+                    @csrf @method('DELETE')
+                    <input type="hidden" name="confirm_code" value="{{ $order->order_code }}">
+                    <div>
+                        <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-rose-500">
+                            Ketik <span class="font-mono">{{ $order->order_code }}</span> untuk konfirmasi
+                        </label>
+                        <input type="text" name="order_code" required autocomplete="off" placeholder="{{ $order->order_code }}"
+                               class="w-full rounded-2xl border border-rose-300 bg-white px-4 py-2.5 font-mono text-sm transition focus:border-rose-500 focus:outline-none focus:ring-4 focus:ring-rose-100">
+                    </div>
+                    <button class="w-full rounded-full bg-rose-600 py-3 text-sm font-bold text-white transition hover:bg-rose-700">
+                        Hapus Order Permanen
+                    </button>
+                </form>
+            </section>
         </div>
     </div>
 @endsection

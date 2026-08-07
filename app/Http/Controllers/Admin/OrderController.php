@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -52,6 +53,27 @@ class OrderController extends Controller
         ]);
 
         return back()->with('status', 'Status order diperbarui ke "'.Order::STATUSES[$data['status']].'".');
+    }
+
+    /** Hapus order beserta riwayat, add-on, review, dan file lampirannya. */
+    public function destroy(Request $request, Order $order)
+    {
+        // Konfirmasi ketik kode order, agar tidak terhapus karena salah klik
+        $request->validate([
+            'order_code' => ['required', 'same:confirm_code'],
+        ], [
+            'order_code.same' => 'Kode order yang Anda ketik tidak cocok. Order tidak dihapus.',
+        ]);
+
+        foreach ($order->attachments as $file) {
+            Storage::disk('public')->delete($file->file_path);
+        }
+
+        $code = $order->order_code;
+        $order->delete();
+
+        return redirect()->route('admin.orders.index')
+            ->with('status', 'Order '.$code.' beserta riwayat dan lampirannya telah dihapus permanen.');
     }
 
     public function updatePayment(Request $request, Order $order)
