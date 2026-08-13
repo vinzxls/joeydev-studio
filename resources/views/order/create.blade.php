@@ -94,6 +94,10 @@
                     <span class="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-100 text-sm font-extrabold text-emerald-600">3</span>
                     Skala &amp; Kompleksitas
                 </h2>
+                <p class="mt-2 text-xs leading-relaxed text-slate-500">
+                    Pilih sejujurnya sesuai kebutuhan Anda — ini menentukan estimasi harga.
+                    Admin akan meninjau ulang dan mengonfirmasi harga final sebelum pengerjaan dimulai.
+                </p>
                 <p class="mt-2 text-xs text-slate-400" id="custom-note" hidden>Untuk layanan custom, bagian ini opsional — harga final akan dikonfirmasi admin setelah konsultasi.</p>
 
                 @foreach ([
@@ -172,6 +176,10 @@
             <div class="mt-5 rounded-2xl bg-slate-900 p-5 text-white">
                 <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Estimasi</p>
                 <p id="estimate-total" class="mt-1 text-3xl font-extrabold">—</p>
+                <p class="mt-2 text-xs leading-relaxed text-slate-400">
+                    Estimasi awal berdasarkan pilihan Anda. Harga final dikonfirmasi admin
+                    setelah meninjau detail kebutuhan, dan disepakati bersama sebelum pengerjaan dimulai.
+                </p>
             </div>
             <button type="submit"
                     class="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-violet-600 py-3.5 font-bold text-white shadow-lg shadow-violet-600/30 transition hover:-translate-y-0.5 hover:bg-violet-700">

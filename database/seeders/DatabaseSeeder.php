@@ -37,12 +37,12 @@ class DatabaseSeeder extends Seeder
 
         // ---- Pricing multipliers ----
         $multipliers = [
-            ['type' => 'scale', 'label' => 'Kecil', 'description' => 'Sedikit fitur/halaman, lingkup sederhana', 'value' => 1.00, 'sort_order' => 1],
-            ['type' => 'scale', 'label' => 'Sedang', 'description' => 'Beberapa modul/fitur, lingkup menengah', 'value' => 1.30, 'sort_order' => 2],
-            ['type' => 'scale', 'label' => 'Besar', 'description' => 'Banyak modul, multi-role, lingkup luas', 'value' => 1.80, 'sort_order' => 3],
-            ['type' => 'complexity', 'label' => 'Dasar', 'description' => 'CRUD standar, teknologi umum', 'value' => 1.00, 'sort_order' => 1],
-            ['type' => 'complexity', 'label' => 'Menengah', 'description' => 'Integrasi API, logika bisnis khusus', 'value' => 1.20, 'sort_order' => 2],
-            ['type' => 'complexity', 'label' => 'Lanjutan', 'description' => 'Algoritma kompleks, realtime, ML, arsitektur khusus', 'value' => 1.50, 'sort_order' => 3],
+            ['type' => 'scale', 'label' => 'Kecil', 'description' => '1–3 halaman/fitur, 1 metode, dataset kecil', 'value' => 1.00, 'sort_order' => 1],
+            ['type' => 'scale', 'label' => 'Sedang', 'description' => '4–8 halaman/fitur, beberapa modul, atau analisis 1 metode lengkap dengan evaluasi', 'value' => 1.30, 'sort_order' => 2],
+            ['type' => 'scale', 'label' => 'Besar', 'description' => '>8 fitur, multi-role, dataset besar, atau perbandingan 2+ metode', 'value' => 1.80, 'sort_order' => 3],
+            ['type' => 'complexity', 'label' => 'Dasar', 'description' => 'CRUD standar, script sederhana, banyak rujukan tersedia', 'value' => 1.00, 'sort_order' => 1],
+            ['type' => 'complexity', 'label' => 'Menengah', 'description' => 'Integrasi API, logika khusus, preprocessing & evaluasi data', 'value' => 1.20, 'sort_order' => 2],
+            ['type' => 'complexity', 'label' => 'Lanjutan', 'description' => 'Deep learning, computer vision, realtime, arsitektur khusus', 'value' => 1.50, 'sort_order' => 3],
             ['type' => 'urgency', 'label' => 'Normal', 'description' => '≥ 5 hari', 'value' => 1.00, 'sort_order' => 1],
             ['type' => 'urgency', 'label' => 'Cepat', 'description' => '2–4 hari', 'value' => 1.15, 'sort_order' => 2],
             ['type' => 'urgency', 'label' => 'Mendesak', 'description' => '< 48 jam', 'value' => 1.30, 'sort_order' => 3],

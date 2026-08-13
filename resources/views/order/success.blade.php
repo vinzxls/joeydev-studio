@@ -30,7 +30,11 @@
     </div>
 
     <p class="mt-6 text-sm text-slate-500">
-        Admin akan menghubungi Anda via WhatsApp (<span class="font-bold text-slate-700">{{ $order->client_wa }}</span>) untuk konfirmasi order dan pembayaran DP.
+        Admin akan menghubungi Anda via WhatsApp (<span class="font-bold text-slate-700">{{ $order->client_wa }}</span>) untuk
+        mengonfirmasi detail kebutuhan, harga final, dan pembayaran DP sebelum pengerjaan dimulai.
+        @if ($order->final_price !== null)
+            Angka di atas masih berupa estimasi awal.
+        @endif
     </p>
 
     <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
