@@ -3,7 +3,20 @@
 @section('title', 'Order '.$order->order_code.' — Admin JoeyDev')
 
 @section('content')
-    <a href="{{ route('admin.orders.index') }}" class="text-sm font-bold text-slate-400 transition hover:text-slate-600">&larr; Kembali ke daftar order</a>
+    <a href="{{ route('admin.orders.index', $order->trashed() ? ['arsip' => 1] : []) }}" class="text-sm font-bold text-slate-400 transition hover:text-slate-600">&larr; Kembali ke daftar order</a>
+
+    @if ($order->trashed())
+        <div class="mt-4 flex flex-col items-start justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 sm:flex-row sm:items-center">
+            <p class="text-sm text-amber-800">
+                <span class="font-bold">Order ini diarsipkan</span> {{ $order->deleted_at?->diffForHumans() }} —
+                tidak tampil di daftar aktif dan tidak dihitung dalam statistik. Datanya masih utuh.
+            </p>
+            <form method="POST" action="{{ route('admin.orders.restore', $order->id) }}">
+                @csrf
+                <button class="whitespace-nowrap rounded-full bg-emerald-600 px-5 py-2 text-sm font-bold text-white shadow-md shadow-emerald-600/30 transition hover:bg-emerald-700">Pulihkan Order</button>
+            </form>
+        </div>
+    @endif
     <div class="mt-3 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
             Order <span class="font-mono text-violet-600">{{ $order->order_code }}</span>
@@ -133,28 +146,62 @@
                 </form>
             </section>
 
-            <section class="rounded-3xl border border-rose-200 bg-rose-50/50 p-6">
-                <h2 class="font-extrabold text-rose-700">Hapus Order<span class="text-rose-400">.</span></h2>
-                <p class="mt-2 text-sm text-rose-700/80">
-                    Menghapus order ini beserta riwayat status, add-on, review, dan file lampirannya.
-                    Tindakan ini permanen dan tidak bisa dibatalkan.
-                </p>
-                <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="mt-4 space-y-3"
-                      onsubmit="return confirm('Hapus permanen order {{ $order->order_code }}? Tindakan ini tidak bisa dibatalkan.')">
-                    @csrf @method('DELETE')
-                    <input type="hidden" name="confirm_code" value="{{ $order->order_code }}">
-                    <div>
-                        <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-rose-500">
-                            Ketik <span class="font-mono">{{ $order->order_code }}</span> untuk konfirmasi
-                        </label>
-                        <input type="text" name="order_code" required autocomplete="off" placeholder="{{ $order->order_code }}"
-                               class="w-full rounded-2xl border border-rose-300 bg-white px-4 py-2.5 font-mono text-sm transition focus:border-rose-500 focus:outline-none focus:ring-4 focus:ring-rose-100">
+            @if ($order->trashed())
+                <section class="rounded-3xl border border-rose-200 bg-rose-50/50 p-6">
+                    <h2 class="font-extrabold text-rose-700">Hapus Permanen<span class="text-rose-400">.</span></h2>
+                    <p class="mt-2 text-sm text-rose-700/80">
+                        Menghapus order ini selamanya beserta riwayat status, add-on, review, dan file lampirannya.
+                        Berbeda dengan arsip, yang ini <span class="font-bold">tidak bisa dipulihkan</span>.
+                    </p>
+                    <form method="POST" action="{{ route('admin.orders.force-destroy', $order->id) }}" class="mt-4 space-y-3"
+                          onsubmit="return confirm('Hapus PERMANEN order {{ $order->order_code }} milik {{ $order->client_name }}?
+
+Data tidak bisa dikembalikan lagi.')">
+                        @csrf @method('DELETE')
+                        <input type="hidden" name="confirm_code" value="{{ $order->order_code }}">
+                        <div>
+                            <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-rose-500">
+                                Ketik <span class="font-mono">{{ $order->order_code }}</span> untuk konfirmasi
+                            </label>
+                            <input type="text" name="order_code" required autocomplete="off" placeholder="{{ $order->order_code }}"
+                                   class="w-full rounded-2xl border border-rose-300 bg-white px-4 py-2.5 font-mono text-sm transition focus:border-rose-500 focus:outline-none focus:ring-4 focus:ring-rose-100">
+                        </div>
+                        <button class="w-full rounded-full bg-rose-600 py-3 text-sm font-bold text-white transition hover:bg-rose-700">
+                            Hapus Permanen
+                        </button>
+                    </form>
+                </section>
+            @else
+                <section class="rounded-3xl border border-amber-200 bg-amber-50/60 p-6">
+                    <h2 class="font-extrabold text-amber-800">Arsipkan Order<span class="text-amber-500">.</span></h2>
+                    <p class="mt-2 text-sm text-amber-800/80">
+                        Order disembunyikan dari daftar aktif dan tidak lagi dihitung dalam statistik,
+                        tapi datanya tetap tersimpan utuh dan <span class="font-bold">bisa dipulihkan kapan saja</span>.
+                    </p>
+                    <div class="mt-4 rounded-2xl bg-white/70 px-4 py-3 text-sm">
+                        <p class="text-xs font-bold uppercase tracking-wide text-amber-600">Yang akan diarsipkan</p>
+                        <p class="mt-1 font-bold text-slate-900">{{ $order->client_name }}</p>
+                        <p class="font-mono text-xs text-slate-500">{{ $order->order_code }} &middot; {{ $order->subject->name ?? '-' }}</p>
                     </div>
-                    <button class="w-full rounded-full bg-rose-600 py-3 text-sm font-bold text-white transition hover:bg-rose-700">
-                        Hapus Order Permanen
-                    </button>
-                </form>
-            </section>
+                    <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="mt-4 space-y-3"
+                          onsubmit="return confirm('Arsipkan order {{ $order->order_code }} milik {{ $order->client_name }}?
+
+Bisa dipulihkan lagi lewat tab Arsip.')">
+                        @csrf @method('DELETE')
+                        <input type="hidden" name="confirm_code" value="{{ $order->order_code }}">
+                        <div>
+                            <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-amber-600">
+                                Ketik <span class="font-mono">{{ $order->order_code }}</span> untuk konfirmasi
+                            </label>
+                            <input type="text" name="order_code" required autocomplete="off" placeholder="{{ $order->order_code }}"
+                                   class="w-full rounded-2xl border border-amber-300 bg-white px-4 py-2.5 font-mono text-sm transition focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-100">
+                        </div>
+                        <button class="w-full rounded-full bg-amber-600 py-3 text-sm font-bold text-white transition hover:bg-amber-700">
+                            Arsipkan Order
+                        </button>
+                    </form>
+                </section>
+            @endif
         </div>
     </div>
 @endsection

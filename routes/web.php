@@ -45,6 +45,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
         Route::patch('/orders/{order}/payment', [Admin\OrderController::class, 'updatePayment'])->name('orders.payment');
         Route::delete('/orders/{order}', [Admin\OrderController::class, 'destroy'])->name('orders.destroy');
+        Route::post('/orders/{order}/restore', [Admin\OrderController::class, 'restore'])->name('orders.restore');
+        Route::delete('/orders/{order}/force', [Admin\OrderController::class, 'forceDestroy'])->name('orders.force-destroy');
 
         Route::get('/subjects', [Admin\SubjectController::class, 'index'])->name('subjects.index');
         Route::post('/subjects', [Admin\SubjectController::class, 'store'])->name('subjects.store');

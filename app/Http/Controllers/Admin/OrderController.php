@@ -12,7 +12,10 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        $arsip = $request->boolean('arsip');
+
         $orders = Order::with('subject')
+            ->when($arsip, fn ($q) => $q->onlyTrashed())
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status))
             ->when($request->filled('subject'), fn ($q) => $q->where('subject_id', $request->subject))
             ->when($request->filled('q'), function ($q) use ($request) {
@@ -29,11 +32,14 @@ class OrderController extends Controller
         return view('admin.orders.index', [
             'orders' => $orders,
             'subjects' => Subject::orderBy('sort_order')->get(),
+            'arsip' => $arsip,
+            'jumlahArsip' => Order::onlyTrashed()->count(),
         ]);
     }
 
-    public function show(Order $order)
+    public function show(string $order)
     {
+        $order = Order::withTrashed()->findOrFail($order);
         $order->load(['subject', 'addons', 'attachments', 'statusLogs', 'review']);
 
         return view('admin.orders.show', compact('order'));
@@ -55,10 +61,41 @@ class OrderController extends Controller
         return back()->with('status', 'Status order diperbarui ke "'.Order::STATUSES[$data['status']].'".');
     }
 
-    /** Hapus order beserta riwayat, add-on, review, dan file lampirannya. */
+    /**
+     * Arsipkan order (soft delete): hilang dari daftar & statistik, tapi masih
+     * bisa dipulihkan. Lampiran sengaja tidak dihapus agar pemulihan utuh.
+     */
     public function destroy(Request $request, Order $order)
     {
-        // Konfirmasi ketik kode order, agar tidak terhapus karena salah klik
+        // Konfirmasi ketik kode order, agar tidak terarsip karena salah klik
+        $request->validate([
+            'order_code' => ['required', 'same:confirm_code'],
+        ], [
+            'order_code.same' => 'Kode order yang Anda ketik tidak cocok. Order tidak diarsipkan.',
+        ]);
+
+        $order->delete();
+
+        return redirect()->route('admin.orders.index')
+            ->with('status', 'Order '.$order->order_code.' ('.$order->client_name.') diarsipkan. '
+                .'Bisa dipulihkan kapan saja lewat daftar Arsip.');
+    }
+
+    /** Kembalikan order yang diarsipkan ke daftar aktif. */
+    public function restore(string $order)
+    {
+        $order = Order::onlyTrashed()->findOrFail($order);
+        $order->restore();
+
+        return redirect()->route('admin.orders.show', $order)
+            ->with('status', 'Order '.$order->order_code.' ('.$order->client_name.') dipulihkan.');
+    }
+
+    /** Hapus permanen beserta riwayat, add-on, review, dan file lampirannya. */
+    public function forceDestroy(Request $request, string $order)
+    {
+        $order = Order::onlyTrashed()->findOrFail($order);
+
         $request->validate([
             'order_code' => ['required', 'same:confirm_code'],
         ], [
@@ -70,10 +107,10 @@ class OrderController extends Controller
         }
 
         $code = $order->order_code;
-        $order->delete();
+        $order->forceDelete();
 
-        return redirect()->route('admin.orders.index')
-            ->with('status', 'Order '.$code.' beserta riwayat dan lampirannya telah dihapus permanen.');
+        return redirect()->route('admin.orders.index', ['arsip' => 1])
+            ->with('status', 'Order '.$code.' beserta riwayat dan lampirannya dihapus permanen.');
     }
 
     public function updatePayment(Request $request, Order $order)
