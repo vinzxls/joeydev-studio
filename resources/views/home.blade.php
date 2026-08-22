@@ -83,9 +83,28 @@
                         yang benar-benar menulis kodenya.
                     </p>
                 </div>
-                <div class="mt-6 flex flex-wrap gap-2">
-                    @foreach (['Laravel', 'PHP', 'MySQL', 'Tailwind CSS', 'JavaScript'] as $skill)
-                        <span class="rounded-full border border-slate-200 bg-[#f7f8fc] px-4 py-1.5 text-xs font-bold text-slate-600">{{ $skill }}</span>
+            </div>
+        </div>
+
+        {{-- Pita teknologi berjalan --}}
+        <div class="mt-12">
+            <p class="text-center text-xs font-bold uppercase tracking-[0.25em] text-slate-400">Tech Stack</p>
+            <div class="jd-pita mt-5" style="--jd-gap: 14px; --jd-durasi: 32s; --jd-fade: 12%;">
+                <div class="jd-jalur" data-jd-gandakan>
+                    @foreach ([
+                        ['Laravel', '#ef4444'],
+                        ['PHP', '#6366f1'],
+                        ['MySQL', '#0ea5e9'],
+                        ['Tailwind CSS', '#06b6d4'],
+                        ['JavaScript', '#f59e0b'],
+                        ['Python', '#3b82f6'],
+                        ['Flutter', '#38bdf8'],
+                        ['Git', '#f97316'],
+                    ] as [$nama, $warna])
+                        <span class="flex shrink-0 items-center gap-2.5 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm">
+                            <span class="h-2.5 w-2.5 shrink-0 rounded-full" style="background: {{ $warna }}"></span>
+                            {{ $nama }}
+                        </span>
                     @endforeach
                 </div>
             </div>
@@ -123,15 +142,18 @@
             <h2 class="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                 Cara <span class="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">Pesan</span><span class="text-emerald-500">.</span>
             </h2>
-            <div class="mt-10 grid gap-5 sm:grid-cols-4">
+            <div class="jd-muncul relative mt-10 grid gap-5 sm:grid-cols-4" data-jd-muncul>
+                {{-- Garis penghubung yang terisi dari kiri ke kanan --}}
+                <span class="jd-garis absolute left-[12%] right-[12%] top-[34px] hidden h-0.5 bg-slate-200 sm:block"></span>
+
                 @foreach ([
                     ['1', 'Pilih Layanan', 'Pilih kategori project yang Anda butuhkan.', 'bg-violet-100 text-violet-600'],
                     ['2', 'Isi Kebutuhan', 'Jelaskan detail, deadline, dan lampiran pendukung.', 'bg-sky-100 text-sky-600'],
                     ['3', 'Lihat Estimasi', 'Harga transparan langsung muncul, tanpa nego berbelit.', 'bg-emerald-100 text-emerald-600'],
                     ['4', 'Pantau Progress', 'Track status pengerjaan lewat kode order Anda.', 'bg-amber-100 text-amber-600'],
                 ] as [$no, $title, $desc, $badge])
-                    <div class="rounded-3xl border border-slate-200 bg-[#f7f8fc] p-6 text-center">
-                        <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-extrabold {{ $badge }}">{{ $no }}</span>
+                    <div class="jd-item group relative rounded-3xl border border-slate-200 bg-[#f7f8fc] p-6 text-center transition hover:border-violet-300 hover:shadow-xl hover:shadow-violet-600/10">
+                        <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-extrabold transition duration-300 group-hover:-rotate-6 group-hover:scale-110 {{ $badge }}">{{ $no }}</span>
                         <h3 class="mt-4 font-bold text-slate-900">{{ $title }}</h3>
                         <p class="mt-1.5 text-sm leading-relaxed text-slate-500">{{ $desc }}</p>
                     </div>
@@ -146,25 +168,30 @@
             <h2 class="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                 Kata <span class="bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">Klien</span><span class="text-sky-500">.</span>
             </h2>
-            <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ($reviews as $review)
-                    <figure class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                        <p class="text-lg text-amber-400">
-                            @for ($i = 1; $i <= 5; $i++){{ $i <= $review->rating ? '★' : '☆' }}@endfor
-                        </p>
-                        @if ($review->comment)
-                            <blockquote class="mt-3 text-sm leading-relaxed text-slate-600">“{{ $review->comment }}”</blockquote>
-                        @endif
-                        <figcaption class="mt-4 flex items-center gap-3">
-                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 text-sm font-extrabold text-violet-600">{{ mb_strtoupper(mb_substr($review->displayName(), 0, 1)) }}</span>
-                            <span>
-                                <span class="block text-sm font-bold text-slate-900">{{ $review->displayName() }}</span>
-                                <span class="block text-xs text-slate-400">{{ $review->order->subject->name ?? '' }}</span>
-                            </span>
-                        </figcaption>
-                    </figure>
-                @endforeach
+            <div class="jd-pita mt-10" style="--jd-gap: 20px; --jd-durasi: 45s; --jd-fade: 6%;">
+                <div class="jd-jalur" data-jd-gandakan>
+                    @foreach ($reviews as $review)
+                        <figure class="w-[320px] shrink-0 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl hover:shadow-violet-600/10 sm:w-[340px]">
+                            <p class="text-lg text-amber-400">
+                                @for ($i = 1; $i <= 5; $i++){{ $i <= $review->rating ? '★' : '☆' }}@endfor
+                            </p>
+                            @if ($review->comment)
+                                <blockquote class="mt-3 min-h-11 text-sm leading-relaxed text-slate-600">“{{ $review->comment }}”</blockquote>
+                            @else
+                                <p class="mt-3 min-h-11 text-sm italic text-slate-400">(tanpa komentar)</p>
+                            @endif
+                            <figcaption class="mt-4 flex items-center gap-3">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-100 text-sm font-extrabold text-violet-600">{{ mb_strtoupper(mb_substr($review->displayName(), 0, 1)) }}</span>
+                                <span>
+                                    <span class="block text-sm font-bold text-slate-900">{{ $review->displayName() }}</span>
+                                    <span class="block text-xs text-slate-400">{{ $review->order->subject->name ?? '' }}</span>
+                                </span>
+                            </figcaption>
+                        </figure>
+                    @endforeach
+                </div>
             </div>
+            <p class="mt-5 text-center text-xs text-slate-400">Arahkan kursor ke ulasan untuk berhenti dan membacanya</p>
         </section>
     @endif
 

@@ -149,6 +149,58 @@
             }, 5000);
         })();
     </script>
+    <script>
+        // --- Pita berjalan: gandakan isi sampai cukup panjang untuk loop mulus ---
+        (function () {
+            var jalur = document.querySelectorAll('[data-jd-gandakan]');
+            if (!jalur.length) return;
+
+            function isiUlang(el) {
+                if (!el.dataset.jdAsli) el.dataset.jdAsli = el.innerHTML;
+                el.innerHTML = el.dataset.jdAsli;
+
+                // Ulangi isi sampai satu set melebihi lebar layar, lalu gandakan
+                // set itu — tanpa ini, geseran -50% menyisakan celah kosong.
+                var batas = 0;
+                while (el.scrollWidth < window.innerWidth && batas < 12) {
+                    el.innerHTML += el.dataset.jdAsli;
+                    batas++;
+                }
+                el.innerHTML += el.innerHTML;
+            }
+
+            jalur.forEach(isiUlang);
+
+            var tunda;
+            window.addEventListener('resize', function () {
+                clearTimeout(tunda);
+                tunda = setTimeout(function () { jalur.forEach(isiUlang); }, 250);
+            });
+        })();
+
+        // --- Muncul bertahap saat masuk layar ---
+        (function () {
+            var blok = document.querySelectorAll('[data-jd-muncul]');
+            if (!blok.length) return;
+
+            if (!('IntersectionObserver' in window)) {
+                blok.forEach(function (b) { b.classList.add('jd-tampil'); });
+                return;
+            }
+
+            var pengamat = new IntersectionObserver(function (entri) {
+                entri.forEach(function (e) {
+                    if (e.isIntersecting) {
+                        e.target.classList.add('jd-tampil');
+                        pengamat.unobserve(e.target);
+                    }
+                });
+            }, { threshold: 0.25 });
+
+            blok.forEach(function (b) { pengamat.observe(b); });
+        })();
+    </script>
+
     @stack('scripts')
 </body>
 </html>

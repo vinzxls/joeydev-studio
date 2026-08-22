@@ -10,3 +10,92 @@
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* =========================================================================
+   Pita berjalan (marquee) — dipakai untuk tech stack & testimoni.
+   Isi jalur digandakan oleh JS sampai cukup panjang, lalu digeser -50%
+   sehingga putarannya menyambung tanpa celah.
+   ========================================================================= */
+@keyframes jd-geser {
+    to {
+        transform: translateX(calc(-50% - (var(--jd-gap) / 2)));
+    }
+}
+
+.jd-pita {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--jd-fade, 8%), #000 calc(100% - var(--jd-fade, 8%)), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 var(--jd-fade, 8%), #000 calc(100% - var(--jd-fade, 8%)), transparent);
+}
+
+.jd-jalur {
+    display: flex;
+    width: max-content;
+    gap: var(--jd-gap);
+    animation: jd-geser var(--jd-durasi) linear infinite;
+    will-change: transform;
+}
+
+/* Berhenti saat disentuh kursor atau saat ada elemen di dalamnya yang difokus
+   lewat keyboard — supaya isinya bisa dibaca. */
+.jd-pita:hover .jd-jalur,
+.jd-pita:focus-within .jd-jalur {
+    animation-play-state: paused;
+}
+
+/* =========================================================================
+   Muncul bertahap saat masuk layar — dipakai di section "Cara Pesan".
+   Kelas .jd-tampil ditambahkan oleh IntersectionObserver.
+   ========================================================================= */
+.jd-muncul .jd-item {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+        opacity 0.55s ease,
+        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.jd-muncul.jd-tampil .jd-item {
+    opacity: 1;
+    transform: none;
+}
+
+.jd-muncul.jd-tampil .jd-item:nth-child(2) { transition-delay: 0.12s; }
+.jd-muncul.jd-tampil .jd-item:nth-child(3) { transition-delay: 0.24s; }
+.jd-muncul.jd-tampil .jd-item:nth-child(4) { transition-delay: 0.36s; }
+.jd-muncul.jd-tampil .jd-item:nth-child(5) { transition-delay: 0.48s; }
+
+/* Garis penghubung antar langkah yang terisi dari kiri ke kanan */
+.jd-garis::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #7c3aed, #0ea5e9, #10b981, #f59e0b);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+}
+
+.jd-tampil .jd-garis::after {
+    transform: scaleX(1);
+}
+
+/* =========================================================================
+   Hormati preferensi "kurangi animasi" di perangkat pengunjung.
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+    .jd-jalur {
+        animation: none;
+    }
+
+    .jd-muncul .jd-item {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .jd-garis::after {
+        transform: scaleX(1);
+        transition: none;
+    }
+}
