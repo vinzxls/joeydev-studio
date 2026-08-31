@@ -36,9 +36,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->middleware('throttle:10,1')
         ->name('login.attempt');
 
+    // 2FA challenge — reachable BEFORE the user is fully authenticated, so it
+    // lives OUTSIDE the auth middleware group. The controller guards access via
+    // the pending-user session state.
+    Route::get('/2fa', [Admin\LoginController::class, 'twoFactorForm'])->name('2fa.form');
+    Route::post('/2fa', [Admin\LoginController::class, 'twoFactorVerify'])
+        ->middleware('throttle:10,1')
+        ->name('2fa.verify');
+
     Route::middleware('auth')->group(function () {
         Route::post('/logout', [Admin\LoginController::class, 'logout'])->name('logout');
         Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
+
+        // 2FA setup / enable — behind auth, logged-in admin only.
+        Route::get('/2fa/setup', [Admin\LoginController::class, 'twoFactorSetup'])->name('2fa.setup');
+        Route::post('/2fa/enable', [Admin\LoginController::class, 'twoFactorEnable'])->name('2fa.enable');
 
         Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');

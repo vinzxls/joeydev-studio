@@ -82,7 +82,7 @@ class Order extends Model
     public static function generateCode(): string
     {
         do {
-            $code = sprintf('JD-%s-%s', now()->year, strtoupper(Str::random(4)));
+            $code = sprintf('JD-%s-%s', now()->year, strtoupper(Str::random(8)));
         } while (self::where('order_code', $code)->exists());
 
         return $code;

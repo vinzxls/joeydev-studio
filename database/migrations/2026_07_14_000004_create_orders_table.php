@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_code')->unique(); // mis: JD-2026-8A3F
+            $table->string('order_code')->unique(); // mis: JD-2026-A7K3XQ9B
             $table->string('client_name');
             $table->string('client_wa');
             $table->string('client_email');

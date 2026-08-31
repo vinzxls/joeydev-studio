@@ -1,66 +1,108 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- Hero --}}
-    <section class="relative overflow-hidden">
-        {{-- Dekorasi konstelasi ala referensi --}}
-        <svg class="pointer-events-none absolute inset-0 h-full w-full opacity-60" xmlns="http://www.w3.org/2000/svg">
-            <g stroke="#c7d2fe" stroke-width="1">
-                <line x1="8%" y1="20%" x2="20%" y2="35%"/><line x1="20%" y1="35%" x2="14%" y2="60%"/>
-                <line x1="78%" y1="18%" x2="90%" y2="30%"/><line x1="90%" y1="30%" x2="82%" y2="52%"/>
-                <line x1="82%" y1="52%" x2="93%" y2="66%"/><line x1="30%" y1="80%" x2="45%" y2="88%"/>
-            </g>
-            <g>
-                <circle cx="8%" cy="20%" r="4" fill="#a5b4fc"/><circle cx="20%" cy="35%" r="3" fill="#f9a8d4"/>
-                <circle cx="14%" cy="60%" r="5" fill="#ddd6fe"/><circle cx="78%" cy="18%" r="4" fill="#f9a8d4"/>
-                <circle cx="90%" cy="30%" r="3" fill="#a5b4fc"/><circle cx="82%" cy="52%" r="5" fill="#ddd6fe"/>
-                <circle cx="93%" cy="66%" r="3" fill="#6ee7b7"/><circle cx="30%" cy="80%" r="3" fill="#a5b4fc"/>
-                <circle cx="45%" cy="88%" r="4" fill="#fcd34d"/><circle cx="60%" cy="10%" r="3" fill="#ddd6fe"/>
-            </g>
-        </svg>
+    {{-- Hero — BLUEPRINT.md §6 (02). Grid 7/5, headline display, kartu profil,
+         statistik dinamis dari database. Dekorasi konstelasi & backdrop miring
+         versi lama dihapus: itu sumber overflow horizontal 5px di mobile. --}}
+    @php $waHero = preg_replace('/\D/', '', (string) config('contact.whatsapp')); @endphp
 
-        <div class="relative mx-auto max-w-6xl px-4 pb-16 pt-24 text-center md:pt-36 md:pb-24">
-            <p class="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">Halo, selamat datang di</p>
-            <h1 class="mx-auto mt-4 max-w-4xl text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl">
-                Joey<span class="bg-gradient-to-r from-violet-600 via-indigo-500 to-sky-500 bg-clip-text text-transparent">Dev</span> Studio<span class="text-violet-600">.</span>
-            </h1>
-            <p class="mx-auto mt-5 max-w-2xl text-base text-slate-500 sm:text-lg">
-                Jasa pembuatan <span class="rounded-lg bg-sky-100 px-2 py-0.5 font-bold text-sky-700">website</span>,
-                <span class="rounded-lg bg-emerald-100 px-2 py-0.5 font-bold text-emerald-700">aplikasi</span> &amp;
-                <span class="rounded-lg bg-violet-100 px-2 py-0.5 font-bold text-violet-700">project IT</span> —
-                estimasi harga transparan langsung keluar, progress bisa dipantau kapan saja.
-            </p>
+    <section data-jd-hero class="jd-grid relative border-b border-garis">
+        <div class="mx-auto max-w-[1280px] px-4 pb-20 pt-14 md:px-8 md:pb-28 md:pt-20">
+            <div class="grid items-center gap-14 lg:grid-cols-12 lg:gap-12">
 
-            <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <a href="{{ route('order.create') }}"
-                   class="flex w-full items-center justify-center gap-2 rounded-full bg-violet-600 px-8 py-3.5 font-bold text-white shadow-lg shadow-violet-600/30 transition hover:-translate-y-0.5 hover:bg-violet-700 sm:w-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>
-                    Pesan Sekarang
-                </a>
-                <a href="{{ route('track.form') }}"
-                   class="flex w-full items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-8 py-3.5 font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-400 sm:w-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-                    Cek Progress
-                </a>
-            </div>
+                {{-- Kiri — 7 kolom --}}
+                <div class="lg:col-span-7">
+                    <x-jd.label-section path="/beranda">Jasa software &amp; project IT</x-jd.label-section>
 
-            <div class="mx-auto mt-14 grid max-w-2xl grid-cols-3 gap-4">
-                @foreach ([
-                    [$stats['completed'], 'Project Selesai', 'text-violet-600'],
-                    [$stats['avg_rating'] > 0 ? number_format($stats['avg_rating'], 1).' ★' : '— ★', 'Rata-rata Rating', 'text-amber-500'],
-                    [$stats['review_count'], 'Ulasan Klien', 'text-emerald-600'],
-                ] as [$value, $label, $color])
-                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 px-3 py-5 shadow-sm backdrop-blur">
-                        <p class="text-3xl font-extrabold {{ $color }}">{{ $value }}</p>
-                        <p class="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-400">{{ $label }}</p>
+                    <h1 class="jd-judul mt-6 text-[clamp(2.5rem,8.5vw,5.25rem)] text-tinta">
+                        Saya bangun<br>
+                        sistem yang<br>
+                        <span class="text-aksen">dipakai.</span>
+                    </h1>
+
+                    <p class="mt-7 max-w-xl text-base leading-relaxed text-redup md:text-lg">
+                        Website, aplikasi mobile, machine learning, sampai IoT. Estimasi harga
+                        langsung keluar saat Anda mengisi form — dan progressnya bisa dipantau
+                        kapan saja lewat kode order.
+                    </p>
+
+                    <div class="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7">
+                        <x-jd.tombol-utama :href="route('order.create')" class="w-full justify-center sm:w-auto">
+                            Pesan Sekarang
+                        </x-jd.tombol-utama>
+
+                        {{-- Bobotnya sengaja di bawah tombol utama: ini jalur klien lama,
+                             bukan ajakan untuk pengunjung baru. --}}
+                        <a href="{{ route('track.form') }}"
+                           class="group inline-flex items-center gap-2 text-sm font-semibold text-redup underline-offset-4 transition-colors hover:text-tinta hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aksen">
+                            Sudah pesan? Cek progress
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                                 class="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-1">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" />
+                            </svg>
+                        </a>
                     </div>
-                @endforeach
+
+                    {{-- Statistik — angka ditarik dari database, jangan pernah ditulis tetap --}}
+                    <dl class="mt-14 grid max-w-lg grid-cols-3 gap-px border border-garis bg-garis">
+                        @foreach ([
+                            [$stats['completed'], 'Project selesai'],
+                            [$stats['avg_rating'] > 0 ? number_format($stats['avg_rating'], 1).'★' : '—', 'Rata-rata rating'],
+                            [$stats['review_count'], 'Ulasan klien'],
+                        ] as [$nilai, $label])
+                            <div class="bg-kertas px-4 py-5">
+                                <dt class="sr-only">{{ $label }}</dt>
+                                <dd>
+                                    <span class="jd-judul block text-3xl text-tinta md:text-4xl">{{ $nilai }}</span>
+                                    <span class="mt-2 block font-mono text-[10px] uppercase leading-tight tracking-[0.14em] text-redup">{{ $label }}</span>
+                                </dd>
+                            </div>
+                        @endforeach
+                    </dl>
+                </div>
+
+                {{-- Kanan — 5 kolom, kartu identitas --}}
+                <div class="lg:col-span-5">
+                    <x-jd.kartu kurung class="mx-auto max-w-sm p-3 lg:max-w-none">
+                        <div class="overflow-hidden rounded-kartu border border-garis">
+                            <img src="{{ asset('images/profil-joey.jpg') }}" alt="Joey Fintheo"
+                                 width="640" height="800" loading="eager"
+                                 class="aspect-[4/5] w-full object-cover grayscale transition-[filter,transform] duration-300 hover:scale-[1.03] hover:grayscale-0">
+                        </div>
+
+                        <div class="px-3 pb-2 pt-5">
+                            <p class="jd-judul text-2xl leading-none text-tinta">Joey Fintheo</p>
+                            <p class="mt-2 font-mono text-[11px] uppercase tracking-[0.14em] text-redup">
+                                Programmer &middot; JoeyDev Studio
+                            </p>
+
+                            <div class="mt-5 border-t border-garis pt-4">
+                                <x-jd.badge-status>Menerima project baru</x-jd.badge-status>
+                            </div>
+
+                            @if ($waHero !== '')
+                                <a href="https://wa.me/{{ $waHero }}?text={{ rawurlencode((string) config('contact.whatsapp_message')) }}"
+                                   target="_blank" rel="noopener"
+                                   class="group mt-4 flex items-center justify-between gap-2 rounded-kartu border border-garis px-4 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-redup transition-colors hover:border-tinta hover:text-tinta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aksen">
+                                    Konsultasi via WhatsApp
+                                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                         class="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7m0 0H8m9 0v9" />
+                                    </svg>
+                                </a>
+                            @endif
+                        </div>
+                    </x-jd.kartu>
+                </div>
             </div>
         </div>
     </section>
 
     {{-- Tentang Saya --}}
-    <section class="bg-white py-16" id="tentang">
+    {{-- overflow-hidden: backdrop miring di bawah foto digeser translate-x-3 dan
+         menembus tepi kanan viewport di mobile. Section ini dibangun ulang di
+         Fase 6; sampai saat itu dekorasinya cukup dipotong di batas section. --}}
+    <section class="overflow-hidden bg-white py-16" id="tentang">
         <div class="mx-auto grid max-w-5xl items-center gap-10 px-4 md:grid-cols-2 md:gap-14">
             <div class="relative mx-auto w-full max-w-sm">
                 {{-- Backdrop miring ala referensi --}}

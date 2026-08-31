@@ -6,9 +6,120 @@
 @source "../**/*.js";
 @source "../**/*.vue";
 
+/* =========================================================================
+   DESIGN TOKENS — lihat BLUEPRINT.md §3.
+   Semua warna, font, dan bentuk redesign berasal dari sini. Jangan menulis
+   warna mentah (#hex) langsung di Blade; pakai utility dari token ini supaya
+   satu perubahan di sini berlaku ke seluruh situs.
+   ========================================================================= */
 @theme {
+    /* --- Fondasi ------------------------------------------------------- */
+    --color-kertas: #f7f7f5; /* background halaman */
+    --color-permukaan: #ffffff; /* kartu, panel */
+    --color-tinta: #101010; /* teks utama & kartu inverted */
+    --color-redup: #6b6b6b; /* teks sekunder */
+    --color-garis: rgba(0, 0, 0, 0.18); /* border 1px */
+    --color-grid: rgba(0, 0, 0, 0.06); /* garis grid blueprint */
+
+    /* --- Aksen ---------------------------------------------------------
+       Dipakai TERBATAS: satu frasa di headline, tautan, menu aktif,
+       status tersedia, dan cincin fokus keyboard. Bukan untuk semua tombol. */
+    --color-aksen: #1d4ed8;
+    --color-aksen-terang: #3b82f6;
+
+    /* --- Tipografi -----------------------------------------------------
+       Archivo punya sumbu lebar (wdth 75–125): headline Indonesia yang
+       kepanjangan dikuruskan lewat .jd-judul-rapat, bukan dikecilkan. */
+    --font-display: 'Archivo', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+    /* --- Bentuk --------------------------------------------------------
+       Maksimal 8px. Tidak ada rounded-2xl, glassmorphism, atau gradien
+       dekoratif di komponen baru. */
+    --radius-kartu: 4px;
+}
+
+/* Disiapkan untuk dark mode (BLUEPRINT.md §1.2 — masih tertunda).
+   Varian `dark:` sudah bisa ditulis sekarang; paletnya belum dibuat dan
+   tombol toggle-nya belum ada, jadi belum ada efek apa pun. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* =========================================================================
+   Grid blueprint — "kanvas" seluruh halaman (BLUEPRINT.md §3).
+   Dibuat dari dua linear-gradient, BUKAN gambar: tajam di semua kerapatan
+   layar dan nol permintaan jaringan. Rapat 24px desktop / 16px mobile.
+   ========================================================================= */
+.jd-grid {
+    background-image:
+        linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+    background-size: var(--jd-rapat, 24px) var(--jd-rapat, 24px);
+}
+
+@media (max-width: 767px) {
+    .jd-grid {
+        --jd-rapat: 16px;
+    }
+}
+
+/* =========================================================================
+   Headline display. Teks Indonesia 40–60% lebih panjang dari padanan
+   Inggrisnya; ketika mulai kepanjangan, kuruskan lebarnya lewat sumbu wdth
+   Archivo dulu — jangan langsung mengecilkan ukurannya (BLUEPRINT.md §4.3).
+   ========================================================================= */
+.jd-judul {
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' 100;
+}
+
+.jd-judul-rapat {
+    font-variation-settings: 'wdth' 85;
+}
+
+/* =========================================================================
+   Navbar — transparan di puncak halaman, memadat saat digulir.
+   Kelas .jd-navbar-padat dipasang oleh JS di komponen navbar.
+   Memakai warna solid, bukan blur: BLUEPRINT.md §3 melarang glassmorphism.
+   ========================================================================= */
+.jd-navbar-padat {
+    background-color: var(--color-kertas);
+    border-bottom-color: var(--color-garis);
+}
+
+/* CTA navbar bergantian dengan CTA hero. Ruangnya sengaja tetap dipesan
+   (visibility, bukan display) supaya menu di sebelahnya tidak melompat saat
+   tombolnya muncul. */
+.jd-cta-nav {
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0.2s;
+}
+
+.jd-navbar-cta-sembunyi .jd-cta-nav {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    pointer-events: none;
+}
+
+/* Denyut halus pada titik status "menerima project baru" */
+@keyframes jd-denyut {
+    75%,
+    100% {
+        transform: scale(2.4);
+        opacity: 0;
+    }
+}
+
+.jd-denyut {
+    animation: jd-denyut 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 /* =========================================================================
@@ -84,7 +195,8 @@
    Hormati preferensi "kurangi animasi" di perangkat pengunjung.
    ========================================================================= */
 @media (prefers-reduced-motion: reduce) {
-    .jd-jalur {
+    .jd-jalur,
+    .jd-denyut {
         animation: none;
     }
 

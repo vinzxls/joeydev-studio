@@ -13,7 +13,7 @@
         @csrf
         <div>
             <label class="mb-1.5 block text-sm font-bold text-slate-700">Kode Order</label>
-            <input type="text" name="order_code" value="{{ old('order_code') }}" required placeholder="JD-2026-XXXX"
+            <input type="text" name="order_code" value="{{ old('order_code') }}" required placeholder="JD-2026-XXXXXXXX"
                    class="w-full rounded-2xl border border-slate-300 px-4 py-3 font-mono text-sm uppercase transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100">
             @error('order_code')
                 <p class="mt-1.5 text-xs font-medium text-rose-600">{{ $message }}</p>
