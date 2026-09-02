@@ -117,7 +117,7 @@
                     </div>
                 </div>
 
-                <x-jd.panel-file path="~/joeydev">
+                <x-jd.panel-file path="~/joeydev" kertas>
                     <li class="flex items-center justify-between gap-4 px-5 py-3">
                         <span class="text-tinta">website/</span>
                         <span class="text-redup">laravel + tailwind</span>
@@ -161,20 +161,22 @@
     </section>
 
     {{-- Layanan --}}
-    <section class="mx-auto max-w-6xl px-4 py-16" id="layanan">
-        <h2 class="text-center font-display text-3xl font-extrabold tracking-tight text-tinta sm:text-4xl">
-            Layanan <span class="text-aksen">Kami</span><span class="text-aksen">.</span>
-        </h2>
-        <p class="mt-3 text-center text-redup">Harga dasar transparan — estimasi final menyesuaikan skala &amp; kompleksitas project Anda.</p>
+    <section class="jd-grid relative border-b border-garis" id="layanan">
+        <div class="mx-auto max-w-6xl px-4 py-16">
+            <h2 class="text-center font-display text-3xl font-extrabold tracking-tight text-tinta sm:text-4xl">
+                Layanan <span class="text-aksen">Kami</span><span class="text-aksen">.</span>
+            </h2>
+            <p class="mt-3 text-center text-redup">Harga dasar transparan — estimasi final menyesuaikan skala &amp; kompleksitas project Anda.</p>
 
-        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            @foreach ($subjects as $subject)
-                <a href="{{ route('order.create', ['subject' => $subject->id]) }}" class="block h-full">
-                    <x-jd.kartu-layanan :nama="$subject->name" :deskripsi="$subject->description"
-                                     :harga="$subject->base_price" :satuan="$subject->unit"
-                                     :custom="$subject->is_custom || $subject->base_price === null" hover />
-                </a>
-            @endforeach
+            <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                @foreach ($subjects as $subject)
+                    <a href="{{ route('order.create', ['subject' => $subject->id]) }}" class="block h-full">
+                        <x-jd.kartu-layanan :nama="$subject->name" :deskripsi="$subject->description"
+                                         :harga="$subject->base_price" :satuan="$subject->unit"
+                                         :custom="$subject->is_custom || $subject->base_price === null" hover />
+                    </a>
+                @endforeach
+            </div>
         </div>
     </section>
 
@@ -195,7 +197,7 @@
                     ['4', 'Pantau Progress', 'Track status pengerjaan lewat kode order Anda.'],
                 ] as [$no, $title, $desc])
                     <div class="jd-item relative">
-                        <x-jd.langkah-proses :nomor="$no" :judul="$title" :deskripsi="$desc" />
+                        <x-jd.langkah-proses :nomor="$no" :judul="$title" :deskripsi="$desc" kertas />
                     </div>
                 @endforeach
             </div>

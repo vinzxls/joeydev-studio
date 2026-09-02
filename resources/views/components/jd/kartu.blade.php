@@ -12,6 +12,7 @@
 --}}
 @props([
     'gelap' => false,
+    'kertas' => false,
     'kurung' => false,
     'hover' => false,
 ])
@@ -19,8 +20,9 @@
 <div
     {{ $attributes->class([
         'relative rounded-kartu border',
-        'border-garis bg-permukaan text-tinta' => ! $gelap,
         'border-tinta bg-tinta text-kertas' => $gelap,
+        'border-garis bg-kertas text-tinta' => ! $gelap && $kertas,
+        'border-garis bg-permukaan text-tinta' => ! $gelap && ! $kertas,
         'transition duration-200 hover:-translate-y-[3px]' => $hover,
         'hover:border-aksen' => $hover && ! $gelap,
         'hover:border-aksen-terang' => $hover && $gelap,

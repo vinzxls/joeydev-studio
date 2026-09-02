@@ -15,9 +15,10 @@
     'judul' => '',
     'deskripsi' => '',
     'gelap' => false,
+    'kertas' => false,
 ])
 
-<x-jd.kartu :gelap="$gelap" class="flex h-full flex-col p-6">
+<x-jd.kartu :gelap="$gelap" :kertas="$kertas" class="flex h-full flex-col p-6">
     <span class="font-mono text-3xl font-bold {{ $gelap ? 'text-aksen-terang' : 'text-aksen' }}">
         {{ str_pad((string) $nomor, 2, '0', STR_PAD_LEFT) }}
     </span>
