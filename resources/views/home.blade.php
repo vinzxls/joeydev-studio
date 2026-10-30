@@ -50,10 +50,12 @@
     {{-- ================= 2. PITA KATA KUNCI ================= --}}
     <section class="jd-strip" aria-hidden="true">
         <div class="jd-strip-track" id="jd-strip">
-            @foreach ($kataKunci as $i => $kata)
-                <span class="jd-strip-word {{ $i % 2 === 0 ? 'jd-strip-word--solid' : 'jd-strip-word--hollow' }}">{{ $kata }}</span>
-                <span class="jd-strip-dot"></span>
-            @endforeach
+            <div class="jd-strip-group" id="jd-strip-group">
+                @foreach ($kataKunci as $i => $kata)
+                    <span class="jd-strip-word {{ $i % 2 === 0 ? 'jd-strip-word--solid' : 'jd-strip-word--hollow' }}">{{ $kata }}</span>
+                    <span class="jd-strip-dot"></span>
+                @endforeach
+            </div>
         </div>
     </section>
 
@@ -352,20 +354,30 @@
             });
         })();
 
-        // --- Pita kata kunci: gandakan isi supaya geseran -50% tidak berlubang ---
+        // --- Pita kata kunci ---
+        // Satu kelompok digandakan sampai lebih lebar dari layar, lalu
+        // kelompok itu disalin sekali lagi. Track jadi tepat 2x kelompok,
+        // sehingga animasi translateX(-50%) selalu mulus tanpa lompatan.
         (function () {
             var track = document.getElementById('jd-strip');
-            if (!track) return;
-            var asli = track.innerHTML;
+            var group = document.getElementById('jd-strip-group');
+            if (!track || !group) return;
+
+            var asli = group.innerHTML;
+            var lebarTarget = window.innerWidth * 1.15;
             var n = 1;
-            while (track.scrollWidth < window.innerWidth * 1.2 && n < 8) {
-                track.innerHTML += asli;
+
+            var ukur = function () {
+                return group.getBoundingClientRect().width;
+            };
+
+            while (ukur() < lebarTarget && n < 12) {
+                group.insertAdjacentHTML('beforeend', asli);
                 n++;
             }
-            // Jumlah salinan harus genap agar translateX(-50%) kembali ke titik awal
-            if (n % 2 !== 0) {
-                track.innerHTML += asli;
-            }
+
+            // Salinan kedua: memastikan -50% kembali ke posisi awal.
+            track.appendChild(group.cloneNode(true));
         })();
     </script>
 @endpush

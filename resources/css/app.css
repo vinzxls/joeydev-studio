@@ -192,14 +192,28 @@
     background: linear-gradient(90deg, rgba(10, 16, 32, 0), rgba(13, 21, 40, 0.75), rgba(10, 16, 32, 0));
     padding: 26px 0;
     overflow: hidden;
+    /* Tepi kiri-kanan dilembutkan supaya kata yang masuk/keluar tidak
+       terlihat terpotong paksa. */
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
 
 .jd-strip-track {
     display: flex;
     width: max-content;
-    gap: 34px;
-    animation: jd-strip-slide 34s linear infinite;
+    animation: jd-strip-slide var(--jd-strip-dur, 20s) linear infinite;
     will-change: transform;
+}
+
+/* Satu kelompok berisi kata kunci yang sudah digandakan hingga melewati
+   lebar layar. Ada dua kelompok identik di dalam track, jadi geseran -50%
+   kembali tepat ke titik awal tanpa lompatan. */
+.jd-strip-group {
+    display: flex;
+    align-items: center;
+    gap: 34px;
+    padding-right: 34px;
+    flex: none;
 }
 
 .jd-strip:hover .jd-strip-track {
@@ -208,7 +222,7 @@
 
 @keyframes jd-strip-slide {
     to {
-        transform: translateX(calc(-50% - 17px));
+        transform: translateX(-50%);
     }
 }
 
@@ -306,14 +320,14 @@
     text-align: center;
     user-select: none;
     font-variation-settings: 'wdth' 88;
-    color: rgba(255, 255, 255, 0.03); /* fallback jika clip-text gagal */
+    color: rgba(255, 255, 255, 0.05); /* Sedikit lebih tebal untuk iPhone */
     background-image: linear-gradient(
         100deg,
-        rgba(255, 255, 255, 0.04) 20%,
-        rgba(140, 185, 255, 0.22) 40%,
-        rgba(226, 240, 255, 0.65) 50%,
-        rgba(140, 185, 255, 0.22) 60%,
-        rgba(255, 255, 255, 0.04) 80%
+        rgba(255, 255, 255, 0.06) 20%,
+        rgba(140, 185, 255, 0.28) 40%,
+        rgba(226, 240, 255, 0.75) 50%,
+        rgba(140, 185, 255, 0.28) 60%,
+        rgba(255, 255, 255, 0.06) 80%
     );
     background-size: 200% 100%;
     background-repeat: no-repeat;
@@ -325,9 +339,18 @@
 
 @media (max-width: 768px) {
     .jd-watermark {
-        font-size: 18vw;
-        line-height: 0.9;
-        letter-spacing: -0.02em;
+        /* Di HP foto menutupi hampir seluruh lebar layar, jadi nama harus
+           jauh lebih lebar dari foto agar terlihat di kiri-kanan foto.
+           Di mobile gradient-clip dimatikan: warna solid lebih pasti tampil
+           di semua browser (termasuk Safari iOS). */
+        font-size: 30vw;
+        line-height: 0.82;
+        letter-spacing: -0.035em;
+        -webkit-background-clip: border-box;
+        background-clip: border-box;
+        background-image: none;
+        color: rgba(214, 231, 255, 0.11);
+        animation: none;
     }
 }
 
