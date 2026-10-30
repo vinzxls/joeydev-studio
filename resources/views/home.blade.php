@@ -355,31 +355,47 @@
         })();
 
         // --- Pita kata kunci ---
-        // Desktop: kelompok digandakan sampai lebih lebar dari layar, lalu
-        // disalin sekali lagi supaya animasi translateX(-50%) mulus.
-        // Mobile: pita statis (lihat media query di app.css), jadi tidak
-        // digandakan sama sekali agar semua kata tampil utuh.
+        // Kelompok kata digandakan sampai lebih lebar dari layar, lalu
+        // disalin sekali lagi supaya animasi translateX(-50%) mulus tanpa
+        // lompatan. Durasi dihitung dari lebar track supaya kecepatan
+        // gesernya sama di HP maupun desktop (px/detik konstan), bukan
+        // melambat di layar lebar.
         (function () {
             var track = document.getElementById('jd-strip');
             var group = document.getElementById('jd-strip-group');
             if (!track || !group) return;
-            if (window.matchMedia('(max-width: 768px)').matches) return;
 
+            var KECEPATAN = 95; // px per detik
             var asli = group.innerHTML;
-            var lebarTarget = window.innerWidth * 1.15;
-            var n = 1;
+            var lebarLayar = document.documentElement.clientWidth;
 
             var ukur = function () {
                 return group.getBoundingClientRect().width;
             };
 
-            while (ukur() < lebarTarget && n < 12) {
+            var n = 1;
+            while (ukur() < lebarLayar * 1.15 && n < 14) {
                 group.insertAdjacentHTML('beforeend', asli);
                 n++;
             }
 
-            // Salinan kedua: memastikan -50% kembali ke posisi awal.
+            // Salinan kedua: memastikan -50% kembali tepat ke posisi awal.
             track.appendChild(group.cloneNode(true));
+
+            var aturDurasi = function () {
+                // Jarak tempuh marquee = separuh lebar track.
+                var jarak = track.scrollWidth / 2;
+                var durasi = jarak / KECEPATAN;
+                track.style.setProperty('--jd-strip-dur', durasi.toFixed(2) + 's');
+            };
+
+            aturDurasi();
+
+            var t;
+            window.addEventListener('resize', function () {
+                clearTimeout(t);
+                t = setTimeout(aturDurasi, 150);
+            });
         })();
     </script>
 @endpush

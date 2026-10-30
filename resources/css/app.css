@@ -186,18 +186,31 @@
 }
 
 /* =========================================================================
-   Pita kata kunci di bawah hero.
-   Desktop: berjalan sebagai marquee. Mobile: statis dan terlipat, karena di
-   layar sempit marquee selalu menyisakan kata yang terpotong di tepi.
+   Pita kata kunci di bawah hero — marquee berjalan terus.
+   Tepi kiri-kanan dilembutkan cukup lebar supaya kata yang sedang
+   masuk/keluar memudar halus, bukan terlihat terpotong di tengah huruf.
    ========================================================================= */
 .jd-strip {
+    --jd-fade: 14%;
     border-top: 1px solid var(--color-garis);
     border-bottom: 1px solid var(--color-garis);
     background: linear-gradient(90deg, rgba(10, 16, 32, 0), rgba(13, 21, 40, 0.75), rgba(10, 16, 32, 0));
     padding: 26px 0;
     overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    -webkit-mask-image: linear-gradient(
+        90deg,
+        transparent,
+        #000 var(--jd-fade),
+        #000 calc(100% - var(--jd-fade)),
+        transparent
+    );
+    mask-image: linear-gradient(
+        90deg,
+        transparent,
+        #000 var(--jd-fade),
+        #000 calc(100% - var(--jd-fade)),
+        transparent
+    );
 }
 
 .jd-strip-track {
@@ -247,43 +260,26 @@
     -webkit-text-stroke: 1px rgba(255, 255, 255, 0.32);
 }
 
-/* --- Mobile: berhenti berjalan, semua kata tampil utuh --- */
+/* --- Mobile: tetap berjalan, hanya ukuran & jarak yang disesuaikan --- */
 @media (max-width: 768px) {
     .jd-strip {
-        padding: 22px 16px;
-        -webkit-mask-image: none;
-        mask-image: none;
-    }
-
-    .jd-strip-track {
-        width: 100%;
-        animation: none;
-        transform: none;
-    }
-
-    /* Kelompok salinan kedua tidak diperlukan saat statis. */
-    .jd-strip-group:nth-child(2) {
-        display: none;
+        --jd-fade: 10%;
+        padding: 20px 0;
     }
 
     .jd-strip-group {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px 16px;
-        padding-right: 0;
-        width: 100%;
-    }
-
-    /* Titik pemisah jadi pengganggu saat teks terlipat — sembunyikan,
-       ganti dengan jarak saja. */
-    .jd-strip-dot {
-        display: none;
+        gap: 22px;
+        padding-right: 22px;
     }
 
     .jd-strip-word {
-        font-size: clamp(1.05rem, 5.2vw, 1.6rem);
-        letter-spacing: -0.015em;
-        line-height: 1.15;
+        font-size: clamp(1.15rem, 5.4vw, 1.7rem);
+        letter-spacing: -0.02em;
+    }
+
+    .jd-strip-dot {
+        width: 5px;
+        height: 5px;
     }
 }
 
