@@ -3,19 +3,20 @@
 
     Minimal dan teknis: tiga kolom tipis, bukan footer raksasa. Perannya cuma
     metadata sistem dan jalur keluar, bukan section tambahan.
+    Latar lebih gelap dari halaman (#03060c) supaya terpisah tanpa bayangan.
 --}}
 @php
     $wa = preg_replace('/\D/', '', (string) config('contact.whatsapp'));
     $pesanWa = rawurlencode((string) config('contact.whatsapp_message'));
 @endphp
 
-<footer class="mt-24 border-t border-garis bg-permukaan">
+<footer class="mt-24 border-t border-garis bg-[#03060c]">
     <div class="mx-auto max-w-[1280px] px-4 py-12 md:px-8 md:py-16">
         <div class="grid gap-10 md:grid-cols-3 md:gap-8">
 
             {{-- Kolom 1 — identitas & status --}}
             <div>
-                <p class="jd-judul text-2xl leading-none text-tinta">JD<span class="text-aksen">.</span></p>
+                <p class="jd-judul text-2xl leading-none text-tinta">JD<span class="text-aksen-terang">.</span></p>
                 <p class="mt-3 max-w-xs text-sm leading-relaxed text-redup">
                     Jasa pembuatan website, aplikasi, dan project IT. Dikerjakan langsung
                     oleh yang menulis kodenya.
@@ -57,8 +58,6 @@
         {{-- Baris bawah --}}
         <div class="mt-12 flex flex-col gap-3 border-t border-garis pt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-redup sm:flex-row sm:items-center sm:justify-between">
             <p>&copy; {{ date('Y') }} JoeyDev Studio</p>
-            {{-- Baris metadata kanan sengaja dikosongkan: isi dengan lokasi/zona
-                 waktu hanya kalau Anda memang ingin menampilkannya ke publik. --}}
             <p aria-hidden="true">Software &middot; Project IT &middot; UI/UX</p>
         </div>
     </div>

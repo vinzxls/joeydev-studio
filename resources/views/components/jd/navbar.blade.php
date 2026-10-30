@@ -25,8 +25,8 @@
 
         {{-- Logo --}}
         <a href="{{ route('home') }}"
-           class="jd-judul shrink-0 text-xl leading-none tracking-tight text-tinta transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aksen focus-visible:ring-offset-4 focus-visible:ring-offset-kertas md:text-2xl">
-            JD<span class="text-aksen">.</span>
+           class="jd-judul shrink-0 text-xl leading-none tracking-tight text-tinta transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aksen-terang focus-visible:ring-offset-4 focus-visible:ring-offset-kertas md:text-2xl">
+            JD<span class="text-aksen-terang">.</span>
             <span class="sr-only">JoeyDev Studio — kembali ke beranda</span>
         </a>
 
@@ -36,9 +36,9 @@
                 <li @class(['hidden md:block' => ! $item['mobile']])>
                     <a href="{{ route($item['route']) }}"
                        @if ($item['aktif']) aria-current="page" @endif
-                       class="flex items-center gap-2 px-2.5 py-2 font-mono text-[11px] uppercase tracking-[0.14em] transition-colors md:px-3 {{ $item['aktif'] ? 'text-tinta' : 'text-redup hover:text-tinta' }} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aksen">
+                       class="flex items-center gap-2 px-2.5 py-2 font-mono text-[11px] uppercase tracking-[0.14em] transition-colors md:px-3 {{ $item['aktif'] ? 'text-tinta' : 'text-redup hover:text-tinta' }} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aksen-terang">
                         <span aria-hidden="true"
-                              class="h-1.5 w-1.5 shrink-0 transition-colors {{ $item['aktif'] ? 'bg-aksen' : 'bg-transparent' }}"></span>
+                              class="h-1.5 w-1.5 shrink-0 transition-colors {{ $item['aktif'] ? 'bg-aksen-terang' : 'bg-transparent' }}"></span>
                         {{ $item['label'] }}
                     </a>
                 </li>
@@ -47,7 +47,7 @@
             {{-- CTA --}}
             <li class="jd-cta-nav ml-1 md:ml-3">
                 <a href="{{ route('order.create') }}"
-                   class="group inline-flex items-center gap-2 rounded-kartu border border-tinta bg-tinta px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-kertas transition duration-200 hover:bg-transparent hover:text-tinta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aksen focus-visible:ring-offset-2 focus-visible:ring-offset-kertas md:px-5">
+                   class="group inline-flex items-center gap-2 rounded-kartu border border-tinta bg-tinta px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-kertas transition duration-200 hover:bg-transparent hover:text-tinta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aksen-terang focus-visible:ring-offset-2 focus-visible:ring-offset-kertas md:px-5">
                     Pesan
                     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
                          class="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-1">
@@ -77,9 +77,6 @@
         //
         // Default-nya TAMPIL: kalau JS gagal atau halaman tidak punya hero
         // (mis. /pesan, /cek-progress), tombolnya tetap ada.
-        //
-        // Ditunda sampai DOM siap: komponen navbar dirender SEBELUM <main>,
-        // jadi pada saat skrip ini jalan elemen hero belum ada.
         var pasangHero = function () {
             var hero = document.querySelector('[data-jd-hero]');
             if (!hero || !('IntersectionObserver' in window)) return;

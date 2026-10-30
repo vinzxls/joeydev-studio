@@ -1,92 +1,145 @@
 @extends('layouts.admin')
 
 @section('title', 'Subject & Layanan — Admin JoeyDev')
+@section('crumb', 'Subject & Layanan')
 
 @section('content')
-    <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Subject &amp; Layanan<span class="text-pink-500">.</span></h1>
-    <p class="mt-1.5 text-sm text-slate-500">Kelola kategori layanan, harga dasar, dan status aktifnya.</p>
+    <div class="ad-page-head">
+        <div>
+            <p class="ad-eyebrow">Katalog</p>
+            <h1 class="ad-title">Subject &amp; Layanan<span>.</span></h1>
+            <p style="margin-top:8px;font-size:12.5px;color:#667085">
+                Kelola kategori layanan, harga dasar, dan status aktifnya.
+            </p>
+        </div>
+        <p class="ad-mono text-[10px] uppercase tracking-[0.14em] text-[#98a2b3]">
+            {{ $subjects->count() }} kategori
+        </p>
+    </div>
 
-    <div class="mt-6 space-y-3">
+    <div class="mt-5 flex flex-col gap-2.5">
         @foreach ($subjects as $subject)
-            <details class="group rounded-3xl border border-slate-200 bg-white shadow-sm transition open:border-violet-300 open:shadow-md">
-                <summary class="flex cursor-pointer flex-wrap items-center justify-between gap-2 px-6 py-4.5" style="padding-top:1.1rem;padding-bottom:1.1rem">
-                    <span class="flex items-center gap-2">
-                        <span class="font-bold {{ $subject->is_active ? 'text-slate-900' : 'text-slate-400 line-through' }}">{{ $subject->name }}</span>
+            <details class="ad-card group" style="overflow:hidden">
+                <summary style="display:flex;cursor:pointer;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 20px;list-style:none">
+                    <span style="display:flex;align-items:center;gap:9px;min-width:0">
+                        <span class="ad-mono" style="font-size:9.5px;letter-spacing:0.14em;color:#d0d5dd">
+                            {{ str_pad((string) $subject->sort_order, 2, '0', STR_PAD_LEFT) }}
+                        </span>
+                        <span style="font-size:13.5px;font-weight:700;color:{{ $subject->is_active ? '#101828' : '#98a2b3' }};{{ $subject->is_active ? '' : 'text-decoration:line-through' }}">
+                            {{ $subject->name }}
+                        </span>
                         @unless ($subject->is_active)
-                            <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-bold text-slate-500">nonaktif</span>
+                            <span class="ad-chip baru">nonaktif</span>
                         @endunless
+                        @if ($subject->is_custom)
+                            <span class="ad-chip revisi">konsultasi</span>
+                        @endif
                     </span>
-                    <span class="rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-600">
-                        {{ $subject->base_price !== null ? 'Rp'.number_format($subject->base_price, 0, ',', '.').' '.$subject->unit : 'Harga via konsultasi' }}
+                    <span class="ad-mono ad-num" style="font-size:11.5px;font-weight:700;color:#1d4ed8;white-space:nowrap">
+                        {{ $subject->base_price !== null ? 'Rp'.number_format($subject->base_price, 0, ',', '.').' '.$subject->unit : 'Via konsultasi' }}
                     </span>
                 </summary>
-                <form method="POST" action="{{ route('admin.subjects.update', $subject) }}" class="grid gap-4 border-t border-slate-100 px-6 py-5 sm:grid-cols-2">
+
+                <form method="POST" action="{{ route('admin.subjects.update', $subject) }}"
+                      class="ad-form-2" style="border-top:1px solid #eef1f6;padding:18px 20px 20px">
                     @csrf @method('PATCH')
+
                     <div>
-                        <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-400">Nama</label>
-                        <input type="text" name="name" value="{{ $subject->name }}" required class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 text-sm transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100">
+                        <label class="ad-label" for="nm-{{ $subject->id }}">Nama</label>
+                        <input id="nm-{{ $subject->id }}" type="text" name="name" value="{{ $subject->name }}" required class="ad-input">
                     </div>
+
                     <div>
-                        <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-400">Satuan</label>
-                        <input type="text" name="unit" value="{{ $subject->unit }}" required class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 text-sm transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100">
+                        <label class="ad-label" for="un-{{ $subject->id }}">Satuan</label>
+                        <input id="un-{{ $subject->id }}" type="text" name="unit" value="{{ $subject->unit }}" required class="ad-input">
                     </div>
-                    <div class="sm:col-span-2">
-                        <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-400">Deskripsi</label>
-                        <textarea name="description" rows="2" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 text-sm transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100">{{ $subject->description }}</textarea>
+
+                    <div style="grid-column:1/-1">
+                        <label class="ad-label" for="ds-{{ $subject->id }}">Deskripsi</label>
+                        <textarea id="ds-{{ $subject->id }}" name="description" rows="2" class="ad-textarea">{{ $subject->description }}</textarea>
                     </div>
+
                     <div>
-                        <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-400">Harga dasar (Rp) — kosongkan jika via konsultasi</label>
-                        <input type="number" name="base_price" min="0" value="{{ $subject->base_price }}" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 text-sm transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100">
+                        <label class="ad-label" for="bp-{{ $subject->id }}">Harga dasar (Rp) — kosongkan jika via konsultasi</label>
+                        <input id="bp-{{ $subject->id }}" type="number" name="base_price" min="0" value="{{ $subject->base_price }}" class="ad-input ad-num">
                     </div>
+
                     <div>
-                        <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-400">Urutan tampil</label>
-                        <input type="number" name="sort_order" min="0" value="{{ $subject->sort_order }}" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 text-sm transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100">
+                        <label class="ad-label" for="so-{{ $subject->id }}">Urutan tampil</label>
+                        <input id="so-{{ $subject->id }}" type="number" name="sort_order" min="0" value="{{ $subject->sort_order }}" class="ad-input ad-num">
                     </div>
-                    <div class="flex flex-wrap items-center gap-5 sm:col-span-2">
-                        <label class="flex items-center gap-2 text-sm font-medium"><input type="checkbox" name="is_custom" value="1" @checked($subject->is_custom) class="accent-violet-600"> Harga via konsultasi (custom)</label>
-                        <label class="flex items-center gap-2 text-sm font-medium"><input type="checkbox" name="is_active" value="1" @checked($subject->is_active) class="accent-violet-600"> Aktif (tampil di form order)</label>
+
+                    <div style="grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:18px;font-size:12.5px;color:#344054">
+                        <label style="display:flex;align-items:center;gap:7px;font-weight:600">
+                            <input type="checkbox" name="is_custom" value="1" @checked($subject->is_custom) style="accent-color:#1d4ed8">
+                            Harga via konsultasi (custom)
+                        </label>
+                        <label style="display:flex;align-items:center;gap:7px;font-weight:600">
+                            <input type="checkbox" name="is_active" value="1" @checked($subject->is_active) style="accent-color:#1d4ed8">
+                            Aktif (tampil di form order)
+                        </label>
                     </div>
-                    <div class="sm:col-span-2">
-                        <button class="rounded-full bg-violet-600 px-6 py-2.5 text-sm font-bold text-white shadow-md shadow-violet-600/30 transition hover:bg-violet-700">Simpan</button>
+
+                    <div style="grid-column:1/-1">
+                        <button class="ad-btn">Simpan perubahan</button>
                     </div>
                 </form>
-                <div class="border-t border-slate-100 px-6 py-4">
+
+                <div style="border-top:1px solid #eef1f6;padding:12px 20px">
                     <form method="POST" action="{{ route('admin.subjects.destroy', $subject) }}"
                           onsubmit="return confirm('Hapus subject {{ $subject->name }}? Jika sudah dipakai order, subject hanya akan dinonaktifkan.')">
                         @csrf @method('DELETE')
-                        <button class="rounded-full border border-rose-200 px-5 py-2 text-sm font-bold text-rose-500 transition hover:bg-rose-50">Hapus subject ini</button>
+                        <button class="ad-btn ad-btn-sm ad-btn-danger">Hapus subject ini</button>
                     </form>
                 </div>
             </details>
         @endforeach
     </div>
 
-    <section class="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 class="font-extrabold text-slate-900">Tambah Subject Baru<span class="text-emerald-500">.</span></h2>
-        <form method="POST" action="{{ route('admin.subjects.store') }}" class="mt-4 grid gap-4 sm:grid-cols-2">
+    {{-- Form tambah: dipisah jelas dari daftar agar tidak salah klik Simpan --}}
+    <section class="ad-card" style="margin-top:22px">
+        <div class="ad-card-head">
+            <h2 class="ad-card-title">Tambah subject baru</h2>
+            <span class="ad-mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:#98a2b3">
+                kategori baru
+            </span>
+        </div>
+
+        <form method="POST" action="{{ route('admin.subjects.store') }}"
+              class="ad-form-2" style="padding:18px 20px 20px">
             @csrf
+
             <div>
-                <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-400">Nama <span class="text-rose-500">*</span></label>
-                <input type="text" name="name" required class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 text-sm transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100">
+                <label class="ad-label" for="new-name">Nama <span style="color:#b42318">*</span></label>
+                <input id="new-name" type="text" name="name" required class="ad-input">
             </div>
+
             <div>
-                <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-400">Satuan <span class="text-rose-500">*</span></label>
-                <input type="text" name="unit" value="per project" required class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 text-sm transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100">
+                <label class="ad-label" for="new-unit">Satuan <span style="color:#b42318">*</span></label>
+                <input id="new-unit" type="text" name="unit" value="per project" required class="ad-input">
             </div>
-            <div class="sm:col-span-2">
-                <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-400">Deskripsi</label>
-                <textarea name="description" rows="2" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 text-sm transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100"></textarea>
+
+            <div style="grid-column:1/-1">
+                <label class="ad-label" for="new-desc">Deskripsi</label>
+                <textarea id="new-desc" name="description" rows="2" class="ad-textarea"></textarea>
             </div>
+
             <div>
-                <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-400">Harga dasar (Rp)</label>
-                <input type="number" name="base_price" min="0" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 text-sm transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100">
+                <label class="ad-label" for="new-price">Harga dasar (Rp)</label>
+                <input id="new-price" type="number" name="base_price" min="0" class="ad-input ad-num">
             </div>
-            <div class="flex items-end gap-5 pb-1">
-                <label class="flex items-center gap-2 text-sm font-medium"><input type="checkbox" name="is_custom" value="1" class="accent-violet-600"> Custom</label>
-                <label class="flex items-center gap-2 text-sm font-medium"><input type="checkbox" name="is_active" value="1" checked class="accent-violet-600"> Aktif</label>
+
+            <div style="display:flex;align-items:center;gap:18px;font-size:12.5px;color:#344054">
+                <label style="display:flex;align-items:center;gap:7px;font-weight:600">
+                    <input type="checkbox" name="is_custom" value="1" style="accent-color:#1d4ed8"> Custom
+                </label>
+                <label style="display:flex;align-items:center;gap:7px;font-weight:600">
+                    <input type="checkbox" name="is_active" value="1" checked style="accent-color:#1d4ed8"> Aktif
+                </label>
             </div>
-            <div class="sm:col-span-2">
-                <button class="rounded-full bg-violet-600 px-6 py-2.5 text-sm font-bold text-white shadow-md shadow-violet-600/30 transition hover:bg-violet-700">Tambah Subject</button>
+
+            <div style="grid-column:1/-1">
+                <button class="ad-btn">Tambah subject</button>
             </div>
         </form>
     </section>

@@ -1,98 +1,193 @@
 @extends('layouts.admin')
 
 @section('title', 'Dashboard — Admin JoeyDev')
+@section('crumb', 'Dashboard')
+
+@section('top-actions')
+    <a href="{{ route('admin.orders.index') }}" class="ad-btn-ghost">Semua order</a>
+    <a href="{{ route('home') }}" target="_blank" rel="noopener" class="ad-btn-solid">
+        Lihat situs
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="width:11px;height:11px" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+        </svg>
+    </a>
+@endsection
 
 @section('content')
-    <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Dashboard<span class="text-violet-600">.</span></h1>
-
-    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        @foreach ([
-            ['Order Aktif', $stats['active_orders'], 'text-sky-600', 'bg-sky-100'],
-            ['Order Bulan Ini', $stats['month_orders'], 'text-violet-600', 'bg-violet-100'],
-            ['Pendapatan Bulan Ini', 'Rp'.number_format($stats['month_revenue'], 0, ',', '.'), 'text-emerald-600', 'bg-emerald-100'],
-            ['Rata-rata Rating', $stats['avg_rating'] > 0 ? $stats['avg_rating'].' ★' : '—', 'text-amber-500', 'bg-amber-100'],
-        ] as [$label, $value, $color, $chip])
-            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <p class="inline-block rounded-full px-3 py-1 text-xs font-bold {{ $chip }} {{ $color }}">{{ $label }}</p>
-                <p class="mt-3 text-2xl font-extrabold {{ $color }}">{{ $value }}</p>
-            </div>
-        @endforeach
+    <div class="ad-page-head">
+        <div>
+            <p class="ad-eyebrow">Ringkasan</p>
+            <h1 class="ad-title">Dashboard<span>.</span></h1>
+        </div>
+        <p class="ad-mono text-[10px] uppercase tracking-[0.14em] text-[#98a2b3]">
+            Diperbarui {{ now()->translatedFormat('d M Y') }} &middot; {{ now()->format('H:i') }} WIT
+        </p>
     </div>
 
-    <div class="mt-6 grid gap-6 lg:grid-cols-3">
-        <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-            <div class="flex items-center justify-between">
-                <h2 class="font-extrabold text-slate-900">Order Terbaru<span class="text-violet-600">.</span></h2>
-                <a href="{{ route('admin.orders.index') }}" class="text-sm font-bold text-violet-600 hover:underline">Lihat semua &rarr;</a>
+    {{-- Statistik: angka besar tabular, label mono, tanpa chip pastel --}}
+    <div class="ad-stats">
+        <div class="ad-stat">
+            <p class="ad-stat-k">Order aktif</p>
+            <span class="ad-stat-v">{{ str_pad((string) $stats['active_orders'], 2, '0', STR_PAD_LEFT) }}</span>
+            <p class="ad-stat-d flat">{{ $stats['active_orders'] > 0 ? 'Sedang dikerjakan' : 'Tidak ada antrian' }}</p>
+        </div>
+
+        <div class="ad-stat">
+            <p class="ad-stat-k">Order bulan ini</p>
+            <span class="ad-stat-v">{{ str_pad((string) $stats['month_orders'], 2, '0', STR_PAD_LEFT) }}</span>
+            <p class="ad-stat-d up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" style="width:10px;height:10px" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                </svg>
+                {{ $stats['month_orders'] }} masuk bulan ini
+            </p>
+        </div>
+
+        <div class="ad-stat">
+            <p class="ad-stat-k">Pendapatan bulan ini</p>
+            <span class="ad-stat-v">
+                @if ($stats['month_revenue'] >= 1000000)
+                    Rp{{ number_format($stats['month_revenue'] / 1000000, 2, ',', '.') }}<span style="font-size:1rem;letter-spacing:0">jt</span>
+                @else
+                    Rp{{ number_format($stats['month_revenue'] / 1000, 0, ',', '.') }}<span style="font-size:1rem;letter-spacing:0">rb</span>
+                @endif
+            </span>
+            <p class="ad-stat-d up">Total lunas</p>
+        </div>
+
+        <div class="ad-stat">
+            <p class="ad-stat-k">Rata-rata rating</p>
+            <span class="ad-stat-v">
+                @if ($stats['avg_rating'] > 0)
+                    {{ number_format($stats['avg_rating'], 1, ',', '.') }}<span style="font-size:1rem;letter-spacing:0">&#9733;</span>
+                @else
+                    &mdash;
+                @endif
+            </span>
+            <p class="ad-stat-d flat">
+                dari {{ $stats['pending_reviews'] > 0 ? $stats['pending_reviews'].' menunggu moderasi' : 'ulasan disetujui' }}
+            </p>
+        </div>
+    </div>
+
+    <div class="ad-grid-2">
+
+        {{-- Order terbaru --}}
+        <section class="ad-card">
+            <div class="ad-card-head">
+                <h2 class="ad-card-title">Order terbaru</h2>
+                <a href="{{ route('admin.orders.index') }}" class="ad-card-link">Lihat semua &rarr;</a>
             </div>
-            <div class="mt-4 overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="border-b border-slate-100 text-xs font-bold uppercase tracking-wide text-slate-400">
+            <div style="overflow-x:auto">
+                <table class="ad-tbl">
+                    <thead>
                         <tr>
-                            <th class="py-2.5 pr-3">Kode</th>
-                            <th class="py-2.5 pr-3">Klien</th>
-                            <th class="py-2.5 pr-3">Layanan</th>
-                            <th class="py-2.5 pr-3">Status</th>
-                            <th class="py-2.5">Total</th>
+                            <th>Kode</th>
+                            <th>Klien</th>
+                            <th>Status</th>
+                            <th>Bayar</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50">
+                    <tbody>
                         @forelse ($recentOrders as $order)
                             <tr>
-                                <td class="py-3 pr-3"><a href="{{ route('admin.orders.show', $order) }}" class="font-mono font-bold text-violet-600 hover:underline">{{ $order->order_code }}</a></td>
-                                <td class="py-3 pr-3 font-semibold text-slate-700">{{ $order->client_name }}</td>
-                                <td class="py-3 pr-3 text-slate-500">{{ $order->subject->name ?? '-' }}</td>
-                                <td class="py-3 pr-3"><span class="whitespace-nowrap rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{{ $order->statusLabel() }}</span></td>
-                                <td class="py-3 font-bold text-slate-900">{{ $order->final_price !== null ? 'Rp'.number_format($order->final_price, 0, ',', '.') : '—' }}</td>
+                                <td>
+                                    <a href="{{ route('admin.orders.show', $order) }}" class="ad-code">{{ $order->order_code }}</a>
+                                </td>
+                                <td>
+                                    <span class="ad-client">{{ $order->client_name }}</span>
+                                    <span class="ad-sub">{{ $order->subject->name ?? '—' }}</span>
+                                </td>
+                                <td><x-ad.chip :nilai="$order->status" /></td>
+                                <td><x-ad.chip jenis="bayar" :nilai="$order->payment_status" /></td>
+                                <td class="ad-money">
+                                    {{ $order->final_price !== null ? 'Rp'.number_format($order->final_price, 0, ',', '.') : '—' }}
+                                </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="py-8 text-center text-slate-400">Belum ada order.</td></tr>
+                            <tr>
+                                <td colspan="5" style="padding:32px 20px;text-align:center;color:#98a2b3">
+                                    Belum ada order.
+                                </td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <div class="space-y-6">
-            <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="font-extrabold text-slate-900">Subject Terpopuler<span class="text-pink-500">.</span></h2>
-                <ul class="mt-4 space-y-2.5 text-sm">
+        <div class="ad-stack">
+
+            {{-- Subject terpopuler --}}
+            <section class="ad-card">
+                <div class="ad-card-head">
+                    <h2 class="ad-card-title">Subject terpopuler</h2>
+                </div>
+                <div style="padding:6px 0 10px">
+                    @php $maksSubject = (int) ($topSubjects->max('total') ?: 1); @endphp
                     @forelse ($topSubjects as $row)
-                        <li class="flex justify-between">
-                            <span class="text-slate-600">{{ $row->subject->name ?? '-' }}</span>
-                            <span class="rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-bold text-violet-600">{{ $row->total }} order</span>
-                        </li>
+                        <div class="ad-bar-row">
+                            <div>
+                                <p class="ad-bar-name">{{ $row->subject->name ?? '—' }}</p>
+                                <div class="ad-bar-track">
+                                    <div class="ad-bar-fill" style="width: {{ round(($row->total / $maksSubject) * 100) }}%"></div>
+                                </div>
+                            </div>
+                            <span class="ad-bar-val">{{ $row->total }}</span>
+                        </div>
                     @empty
-                        <li class="text-slate-400">Belum ada data.</li>
+                        <p style="padding:14px 20px;font-size:12.5px;color:#98a2b3">Belum ada data.</p>
                     @endforelse
-                </ul>
+                </div>
             </section>
 
-            <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="font-extrabold text-slate-900">6 Bulan Terakhir<span class="text-sky-500">.</span></h2>
-                <ul class="mt-4 space-y-2.5 text-sm">
-                    @forelse ($monthly as $ym => $total)
-                        <li class="flex items-center gap-2">
-                            <span class="w-16 font-medium text-slate-500">{{ $ym }}</span>
-                            <span class="h-2.5 rounded-full bg-gradient-to-r from-violet-500 to-indigo-400" style="width: {{ min(100, $total * 10) }}%"></span>
-                            <span class="font-extrabold text-slate-900">{{ $total }}</span>
-                        </li>
-                    @empty
-                        <li class="text-slate-400">Belum ada data.</li>
-                    @endforelse
-                </ul>
+            {{-- Ringkasan --}}
+            <section class="ad-card">
+                <div class="ad-card-head">
+                    <h2 class="ad-card-title">Ringkasan</h2>
+                </div>
+                <div style="padding:6px 0 10px">
+                    <div class="ad-sum"><span>Total order</span><b>{{ $stats['total_orders'] }}</b></div>
+                    <div class="ad-sum"><span>Order selesai</span><b>{{ $stats['completed_orders'] }}</b></div>
+                    <div class="ad-sum">
+                        <span>Total pendapatan (lunas)</span>
+                        <b>Rp{{ number_format($stats['total_revenue'], 0, ',', '.') }}</b>
+                    </div>
+                    <div class="ad-sum">
+                        <span>Review menunggu moderasi</span>
+                        <a href="{{ route('admin.reviews.index') }}">{{ $stats['pending_reviews'] }}</a>
+                    </div>
+                </div>
             </section>
 
-            <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="font-extrabold text-slate-900">Ringkasan<span class="text-emerald-500">.</span></h2>
-                <ul class="mt-4 space-y-2.5 text-sm text-slate-600">
-                    <li class="flex justify-between"><span>Total order</span><span class="font-extrabold text-slate-900">{{ $stats['total_orders'] }}</span></li>
-                    <li class="flex justify-between"><span>Order selesai</span><span class="font-extrabold text-slate-900">{{ $stats['completed_orders'] }}</span></li>
-                    <li class="flex justify-between"><span>Total pendapatan (lunas)</span><span class="font-extrabold text-slate-900">Rp{{ number_format($stats['total_revenue'], 0, ',', '.') }}</span></li>
-                    <li class="flex justify-between"><span>Review menunggu moderasi</span>
-                        <a href="{{ route('admin.reviews.index') }}" class="font-extrabold text-violet-600 hover:underline">{{ $stats['pending_reviews'] }}</a></li>
-                </ul>
-            </section>
         </div>
     </div>
+
+    {{-- Tren 6 bulan --}}
+    <section class="ad-card" style="margin-top:16px">
+        <div class="ad-card-head">
+            <h2 class="ad-card-title">Order 6 bulan terakhir</h2>
+            <span class="ad-mono" style="font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:#98a2b3">
+                per bulan
+            </span>
+        </div>
+        <div style="padding:14px 20px 20px">
+            @php $maksBulan = (int) ($monthly->max() ?: 1); @endphp
+            @forelse ($monthly as $ym => $total)
+                @php
+                    $label = \Carbon\Carbon::createFromFormat('Y-m', $ym)->translatedFormat('M Y');
+                @endphp
+                <div style="display:flex;align-items:center;gap:12px;padding:5px 0">
+                    <span class="ad-mono" style="width:64px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#98a2b3">{{ $label }}</span>
+                    <span style="flex:1;height:5px;border-radius:999px;background:#eef1f6;overflow:hidden">
+                        <span style="display:block;height:100%;border-radius:999px;background:linear-gradient(to right,#1d4ed8,#60a5fa);width:{{ max(4, round(($total / $maksBulan) * 100)) }}%"></span>
+                    </span>
+                    <span class="ad-mono" style="width:24px;text-align:right;font-size:11px;font-weight:700;color:#475467">{{ $total }}</span>
+                </div>
+            @empty
+                <p style="font-size:12.5px;color:#98a2b3">Belum ada data.</p>
+            @endforelse
+        </div>
+    </section>
 @endsection

@@ -7,23 +7,25 @@
 @source "../**/*.vue";
 
 /* =========================================================================
-   DESIGN TOKENS — lihat BLUEPRINT.md §3.
-   Semua warna, font, dan bentuk redesign berasal dari sini. Jangan menulis
-   warna mentah (#hex) langsung di Blade; pakai utility dari token ini supaya
+   DESIGN TOKENS — tema gelap "Deep Dark Blue".
+   Semua warna, font, dan bentuk berasal dari sini. Jangan menulis warna
+   mentah (#hex) langsung di Blade; pakai utility dari token ini supaya
    satu perubahan di sini berlaku ke seluruh situs.
    ========================================================================= */
 @theme {
     /* --- Fondasi ------------------------------------------------------- */
-    --color-kertas: #f7f7f5; /* background halaman */
-    --color-permukaan: #ffffff; /* kartu, panel */
-    --color-tinta: #101010; /* teks utama & kartu inverted */
-    --color-redup: #6b6b6b; /* teks sekunder */
-    --color-garis: rgba(0, 0, 0, 0.18); /* border 1px */
-    --color-grid: rgba(0, 0, 0, 0.06); /* garis grid blueprint */
+    --color-kertas: #04070f; /* background halaman */
+    --color-permukaan: #0a1020; /* kartu, panel */
+    --color-panel: #0a1020; /* alias panel */
+    --color-panel-2: #0d1528; /* panel lebih terang (hover, isian) */
+    --color-tinta: #eef2f8; /* teks utama */
+    --color-redup: #8fa0bd; /* teks sekunder */
+    --color-garis: #1b2740; /* border 1px */
+    --color-grid: rgba(255, 255, 255, 0.035); /* garis grid blueprint */
 
     /* --- Aksen ---------------------------------------------------------
        Dipakai TERBATAS: satu frasa di headline, tautan, menu aktif,
-       status tersedia, dan cincin fokus keyboard. Bukan untuk semua tombol. */
+       status tersedia, dan cincin fokus keyboard. */
     --color-aksen: #1d4ed8;
     --color-aksen-terang: #3b82f6;
 
@@ -36,38 +38,49 @@
     --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
 
     /* --- Bentuk --------------------------------------------------------
-       Maksimal 8px. Tidak ada rounded-2xl, glassmorphism, atau gradien
-       dekoratif di komponen baru. */
+       Radius kecil untuk kontrol (4px), radius besar hanya untuk panel
+       besar dan keycap. Tidak ada glassmorphism. */
     --radius-kartu: 4px;
+    --radius-panel: 18px;
+    --radius-key: 16px;
 }
 
-/* Disiapkan untuk dark mode (BLUEPRINT.md §1.2 — masih tertunda).
-   Varian `dark:` sudah bisa ditulis sekarang; paletnya belum dibuat dan
-   tombol toggle-nya belum ada, jadi belum ada efek apa pun. */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /* =========================================================================
-   Grid blueprint — "kanvas" seluruh halaman (BLUEPRINT.md §3).
-   Dibuat dari dua linear-gradient, BUKAN gambar: tajam di semua kerapatan
-   layar dan nol permintaan jaringan. Rapat 24px desktop / 16px mobile.
+   KANVAS — dipasang di <body>. Grid 40px + tiga cahaya ambient yang
+   memberi kedalaman. Dijadikan latar body (bukan div overlay) supaya tidak
+   ada masalah urutan tumpukan dengan konten.
    ========================================================================= */
+.jd-kanvas {
+    background-color: var(--color-kertas);
+    background-image:
+        radial-gradient(900px circle at 12% 2%, rgba(29, 78, 216, 0.22), transparent 62%),
+        radial-gradient(760px circle at 88% 38%, rgba(37, 99, 235, 0.1), transparent 66%),
+        radial-gradient(700px circle at 50% 96%, rgba(29, 78, 216, 0.12), transparent 70%),
+        linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+    background-size: auto, auto, auto, 40px 40px, 40px 40px;
+}
+
+/* Grid saja, tanpa cahaya — untuk splash dan panel dalam. */
 .jd-grid {
     background-image:
         linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
         linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
-    background-size: var(--jd-rapat, 24px) var(--jd-rapat, 24px);
+    background-size: var(--jd-rapat, 40px) var(--jd-rapat, 40px);
 }
 
 @media (max-width: 767px) {
     .jd-grid {
-        --jd-rapat: 16px;
+        --jd-rapat: 24px;
     }
 }
 
 /* =========================================================================
    Headline display. Teks Indonesia 40–60% lebih panjang dari padanan
    Inggrisnya; ketika mulai kepanjangan, kuruskan lebarnya lewat sumbu wdth
-   Archivo dulu — jangan langsung mengecilkan ukurannya (BLUEPRINT.md §4.3).
+   Archivo dulu — jangan langsung mengecilkan ukurannya.
    ========================================================================= */
 .jd-judul {
     font-family: var(--font-display);
@@ -82,19 +95,37 @@
     font-variation-settings: 'wdth' 85;
 }
 
+/* Judul section: wdth sedikit sempit, tinggi rapat. */
+.jd-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+    color: var(--color-tinta);
+    font-variation-settings: 'wdth' 92;
+}
+
+/* Label metadata kecil di atas judul section. */
+.jd-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #6d80a0;
+}
+
 /* =========================================================================
    Navbar — transparan di puncak halaman, memadat saat digulir.
    Kelas .jd-navbar-padat dipasang oleh JS di komponen navbar.
-   Memakai warna solid, bukan blur: BLUEPRINT.md §3 melarang glassmorphism.
+   Memakai warna solid, bukan blur.
    ========================================================================= */
 .jd-navbar-padat {
-    background-color: var(--color-kertas);
+    background-color: rgba(4, 7, 15, 0.94);
     border-bottom-color: var(--color-garis);
 }
 
 /* CTA navbar bergantian dengan CTA hero. Ruangnya sengaja tetap dipesan
-   (visibility, bukan display) supaya menu di sebelahnya tidak melompat saat
-   tombolnya muncul. */
+   (visibility, bukan display) supaya menu di sebelahnya tidak melompat. */
 .jd-cta-nav {
     transition:
         opacity 0.2s ease,
@@ -154,9 +185,64 @@
     animation-play-state: paused;
 }
 
+/* Pita kata kunci editorial (di bawah hero). */
+.jd-strip {
+    border-top: 1px solid var(--color-garis);
+    border-bottom: 1px solid var(--color-garis);
+    background: linear-gradient(90deg, rgba(10, 16, 32, 0), rgba(13, 21, 40, 0.75), rgba(10, 16, 32, 0));
+    padding: 26px 0;
+    overflow: hidden;
+}
+
+.jd-strip-track {
+    display: flex;
+    width: max-content;
+    gap: 34px;
+    animation: jd-strip-slide 34s linear infinite;
+    will-change: transform;
+}
+
+.jd-strip:hover .jd-strip-track {
+    animation-play-state: paused;
+}
+
+@keyframes jd-strip-slide {
+    to {
+        transform: translateX(calc(-50% - 17px));
+    }
+}
+
+.jd-strip-word {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    font-variation-settings: 'wdth' 90;
+}
+
+.jd-strip-word--solid {
+    color: #dfe8f6;
+}
+
+.jd-strip-word--hollow {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+}
+
+.jd-strip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--color-aksen-terang);
+    align-self: center;
+    flex: none;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
+}
+
 /* =========================================================================
-   Muncul bertahap saat masuk layar — dipakai di section "Cara Pesan".
-   Kelas .jd-tampil ditambahkan oleh IntersectionObserver.
+   Muncul bertahap saat masuk layar.
    ========================================================================= */
 .jd-muncul .jd-item {
     opacity: 0;
@@ -176,12 +262,26 @@
 .jd-muncul.jd-tampil .jd-item:nth-child(4) { transition-delay: 0.36s; }
 .jd-muncul.jd-tampil .jd-item:nth-child(5) { transition-delay: 0.48s; }
 
+/* Reveal per-elemen dengan urutan opsional lewat --d. */
+.jd-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+        opacity 0.8s ease var(--d, 0s),
+        transform 0.95s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+}
+
+.jd-reveal.is-in {
+    opacity: 1;
+    transform: none;
+}
+
 /* Garis penghubung antar langkah yang terisi dari kiri ke kanan */
 .jd-garis::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, #7c3aed, #0ea5e9, #10b981, #f59e0b);
+    background: linear-gradient(90deg, #1d4ed8, #3b82f6, #60a5fa);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
@@ -192,15 +292,577 @@
 }
 
 /* =========================================================================
+   HERO — nama besar di belakang foto. Satu elemen saja: isi huruf memakai
+   gradien yang bergerak pelan, jadi nama terbaca tanpa perlu lapisan
+   tambahan yang membuat tampilan terasa ramai.
+   ========================================================================= */
+.jd-watermark {
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.045em;
+    line-height: 0.78;
+    font-size: clamp(3.5rem, 16vw, 15rem);
+    text-align: center;
+    user-select: none;
+    font-variation-settings: 'wdth' 88;
+    color: transparent;
+    background-image: linear-gradient(
+        100deg,
+        rgba(255, 255, 255, 0.06) 26%,
+        rgba(140, 185, 255, 0.26) 44%,
+        rgba(226, 240, 255, 0.72) 50%,
+        rgba(140, 185, 255, 0.26) 56%,
+        rgba(255, 255, 255, 0.06) 74%
+    );
+    background-size: 240% 100%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: jd-wm-sweep 9s cubic-bezier(0.5, 0, 0.5, 1) 1.2s infinite;
+}
+
+@keyframes jd-wm-sweep {
+    0% { background-position: 176% 0; }
+    58%,
+    100% { background-position: -76% 0; }
+}
+
+.jd-portrait-frame {
+    position: relative;
+    width: min(84vw, 350px);
+}
+
+.jd-portrait-frame::before {
+    content: '';
+    position: absolute;
+    inset: -18% -22%;
+    background: radial-gradient(circle at 50% 45%, rgba(29, 78, 216, 0.5), transparent 68%);
+    filter: blur(40px);
+    z-index: -1;
+}
+
+.jd-portrait {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.08);
+    transition: filter 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    -webkit-mask-image: linear-gradient(to bottom, #000 64%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 64%, transparent 100%);
+}
+
+.jd-portrait-frame:hover .jd-portrait {
+    filter: grayscale(0) contrast(1.02);
+    transform: scale(1.02);
+}
+
+/* =========================================================================
+   PANEL SPESIFIKASI — deretan angka kunci di samping perkenalan.
+   ========================================================================= */
+.jd-spec {
+    border: 1px solid var(--color-garis);
+    border-radius: var(--radius-panel);
+    background: linear-gradient(165deg, #0c1424, #070c17);
+    padding: 6px;
+}
+
+.jd-spec-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+}
+
+.jd-spec-row + .jd-spec-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.jd-spec-k {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #5c6f8f;
+}
+
+.jd-spec-v {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -0.03em;
+    color: #dce8ff;
+    font-variant-numeric: tabular-nums;
+}
+
+.jd-spec-v small {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #7f92b3;
+    letter-spacing: 0;
+}
+
+/* Badge ketersediaan */
+.jd-available {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(52, 211, 153, 0.28);
+    background: rgba(16, 185, 129, 0.08);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #6ee7b7;
+}
+
+.jd-available i {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: #34d399;
+    animation: jd-pulse 2.2s ease-out infinite;
+}
+
+@keyframes jd-pulse {
+    70%,
+    100% {
+        box-shadow: 0 0 0 8px rgba(52, 211, 153, 0);
+    }
+}
+
+/* =========================================================================
+   LAYANAN — baris indeks. Tanpa ikon: nomor mono + nama display + harga.
+   ========================================================================= */
+.jd-svc {
+    position: relative;
+    display: block;
+    border-bottom: 1px solid var(--color-garis);
+    padding: 22px 8px 22px 0;
+    transition: background 0.4s ease, padding 0.4s ease;
+    isolation: isolate;
+}
+
+.jd-svc::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--color-aksen-terang), rgba(59, 130, 246, 0));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.jd-svc-head {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 14px;
+}
+
+.jd-svc-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: #445876;
+    transition: color 0.35s ease, transform 0.35s ease;
+}
+
+.jd-svc-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.05rem, 2vw, 1.45rem);
+    letter-spacing: -0.025em;
+    color: #dbe5f5;
+    transition: color 0.35s ease;
+    font-variation-settings: 'wdth' 94;
+}
+
+.jd-svc-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.jd-svc-price {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: #7d90b0;
+    transition: color 0.35s ease;
+    white-space: nowrap;
+}
+
+.jd-svc-arrow {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    border: 1px solid var(--color-garis);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5b6d8c;
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    flex: none;
+}
+
+.jd-svc-desc {
+    margin-top: 10px;
+    padding-left: 70px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #7e8ea9;
+    max-width: 62ch;
+}
+
+@media (hover: hover) {
+    .jd-svc:hover {
+        background: linear-gradient(90deg, rgba(29, 78, 216, 0.14), rgba(29, 78, 216, 0) 62%);
+        padding-left: 18px;
+    }
+
+    .jd-svc:hover::before {
+        transform: scaleY(1);
+    }
+
+    .jd-svc:hover .jd-svc-num {
+        color: var(--color-aksen-terang);
+        transform: translateX(-2px);
+    }
+
+    .jd-svc:hover .jd-svc-name {
+        color: #ffffff;
+    }
+
+    .jd-svc:hover .jd-svc-arrow {
+        background: var(--color-aksen-terang);
+        border-color: var(--color-aksen-terang);
+        color: #04070f;
+        transform: rotate(-45deg);
+    }
+
+    .jd-svc:hover .jd-svc-price {
+        color: #cfe0ff;
+    }
+}
+
+@media (max-width: 640px) {
+    .jd-svc-head {
+        grid-template-columns: 38px 1fr;
+        row-gap: 8px;
+    }
+
+    .jd-svc-meta {
+        grid-column: 2;
+        justify-content: flex-start;
+    }
+
+    .jd-svc-desc {
+        padding-left: 52px;
+    }
+
+    .jd-svc-arrow {
+        display: none;
+    }
+}
+
+/* =========================================================================
+   KEYCAPS — matriks tombol 3D. Tiap tombol diberi --brand sesuai warna
+   merek teknologinya.
+   ========================================================================= */
+.jd-keycaps-wrap {
+    perspective: 1200px;
+}
+
+.jd-keycaps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    transform: rotateX(14deg) rotateY(-10deg) rotateZ(3deg);
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.jd-keycaps:hover {
+    transform: rotateX(6deg) rotateY(-3deg) rotateZ(1deg);
+}
+
+@media (max-width: 640px) {
+    .jd-keycaps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        transform: rotateX(8deg) rotateY(0deg) rotateZ(0deg);
+    }
+}
+
+.jd-keycap {
+    --brand: #64748b;
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius-key);
+    background: linear-gradient(158deg, #16203a 0%, #0a1020 62%);
+    border: 1px solid #24314d;
+    box-shadow:
+        0 9px 0 #050a14,
+        0 16px 26px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.09);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.2s ease, background 0.2s ease;
+    user-select: none;
+    outline: none;
+}
+
+.jd-keycap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 110%, var(--brand), transparent 72%);
+    opacity: 0.9;
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+.jd-keycap-glyph {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.35rem, 2.4vw, 2rem);
+    line-height: 1;
+    color: var(--brand);
+    letter-spacing: -0.03em;
+    text-shadow: 0 0 18px currentColor;
+    transition: color 0.18s ease;
+}
+
+.jd-keycap-label {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: #93a4c2;
+    transition: color 0.18s ease;
+}
+
+.jd-keycap:hover,
+.jd-keycap:focus-visible,
+.jd-keycap.is-active {
+    transform: translateZ(22px) translateY(-5px);
+    border-color: var(--brand);
+    box-shadow:
+        0 13px 0 color-mix(in srgb, var(--brand) 45%, #050a14),
+        0 24px 38px color-mix(in srgb, var(--brand) 28%, transparent),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(158deg, #1d2a49 0%, #0c1324 62%);
+}
+
+.jd-keycap:hover .jd-keycap-label,
+.jd-keycap:focus-visible .jd-keycap-label,
+.jd-keycap.is-active .jd-keycap-label {
+    color: #ffffff;
+}
+
+.jd-keycap:active {
+    transform: translateZ(4px) translateY(6px);
+    box-shadow:
+        0 2px 0 color-mix(in srgb, var(--brand) 40%, #050a14),
+        0 6px 10px rgba(0, 0, 0, 0.55);
+}
+
+.jd-readout {
+    border: 1px solid var(--color-garis);
+    border-radius: 12px;
+    background: linear-gradient(165deg, #0b1322, #070c17);
+    padding: 16px 18px;
+}
+
+/* =========================================================================
+   CARA PESAN — timeline garis tipis dengan node yang menyala.
+   ========================================================================= */
+.jd-steps {
+    position: relative;
+}
+
+.jd-steps::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 14px;
+    bottom: 26px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--color-aksen-terang), rgba(59, 130, 246, 0.12) 55%, transparent);
+}
+
+.jd-step {
+    position: relative;
+    padding: 0 0 46px 44px;
+}
+
+.jd-step:last-child {
+    padding-bottom: 0;
+}
+
+.jd-step-node {
+    position: absolute;
+    left: 0;
+    top: 3px;
+    width: 11px;
+    height: 11px;
+    border-radius: 999px;
+    border: 1px solid #2c3d5c;
+    background: #070c17;
+    transition: all 0.5s ease;
+}
+
+.jd-step.is-in .jd-step-node {
+    border-color: var(--color-aksen-terang);
+    background: var(--color-aksen-terang);
+    box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.14), 0 0 18px rgba(59, 130, 246, 0.55);
+}
+
+.jd-step-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #435672;
+    transition: color 0.45s ease;
+}
+
+.jd-step.is-in .jd-step-num {
+    color: var(--color-aksen-terang);
+}
+
+.jd-step-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    color: #dbe5f5;
+    margin-top: 8px;
+    font-variation-settings: 'wdth' 94;
+}
+
+.jd-step-desc {
+    margin-top: 8px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #7c8ca7;
+    max-width: 52ch;
+}
+
+/* =========================================================================
+   CTA penutup — panel dengan tanda siku di empat pojok.
+   ========================================================================= */
+.jd-cta {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-garis);
+    border-radius: 22px;
+    background:
+        radial-gradient(700px circle at 50% -10%, rgba(29, 78, 216, 0.38), transparent 68%),
+        linear-gradient(180deg, #0a1020, #05090f);
+    padding: 70px 28px 64px;
+    text-align: center;
+}
+
+.jd-cta-mark {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(4rem, 15vw, 12rem);
+    letter-spacing: -0.05em;
+    line-height: 0.8;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.06);
+    user-select: none;
+    font-variation-settings: 'wdth' 84;
+}
+
+.jd-corner {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 1px solid rgba(59, 130, 246, 0.45);
+    pointer-events: none;
+}
+
+.jd-corner--tl { top: 14px; left: 14px; border-right: 0; border-bottom: 0; }
+.jd-corner--tr { top: 14px; right: 14px; border-left: 0; border-bottom: 0; }
+.jd-corner--bl { bottom: 14px; left: 14px; border-right: 0; border-top: 0; }
+.jd-corner--br { bottom: 14px; right: 14px; border-left: 0; border-top: 0; }
+
+/* =========================================================================
+   SPLASH — sapaan 10 bahasa, keluar dengan tirai terangkat.
+   ========================================================================= */
+#jd-splash {
+    transition: transform 0.95s cubic-bezier(0.76, 0, 0.24, 1);
+    will-change: transform;
+}
+
+#jd-splash.jd-splash-exit {
+    transform: translateY(-100%);
+}
+
+.jd-splash-word {
+    display: block;
+    min-height: 1.05em;
+}
+
+.jd-code {
+    padding: 3px 7px 4px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    color: #3a4a66;
+    transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.jd-code.is-on {
+    color: #93c5fd;
+    background-color: rgba(29, 78, 216, 0.18);
+    border-color: rgba(59, 130, 246, 0.45);
+}
+
+/* =========================================================================
    Hormati preferensi "kurangi animasi" di perangkat pengunjung.
    ========================================================================= */
 @media (prefers-reduced-motion: reduce) {
     .jd-jalur,
-    .jd-denyut {
+    .jd-denyut,
+    .jd-strip-track,
+    .jd-available i,
+    .jd-watermark {
         animation: none;
     }
 
-    .jd-muncul .jd-item {
+    .jd-watermark {
+        background: none;
+        color: rgba(255, 255, 255, 0.09);
+    }
+
+    .jd-muncul .jd-item,
+    .jd-reveal {
         opacity: 1;
         transform: none;
         transition: none;
@@ -209,5 +871,848 @@
     .jd-garis::after {
         transform: scaleX(1);
         transition: none;
+    }
+
+    #jd-splash {
+        transition-duration: 0.01s;
+    }
+}
+
+/* =========================================================================
+   ADMIN — chrome gelap, kanvas terang.
+   Semua aturan di bawah ini di-scope ke .ad supaya tidak bocor ke halaman
+   publik. Radius 8px, aksen biru #1d4ed8, angka tabular standar.
+   ========================================================================= */
+.ad {
+    --a-chrome: #070c17;
+    --a-chrome-2: #0a1020;
+    --a-line: #1b2740;
+    --a-canvas: #f4f6fb;
+    --a-card: #ffffff;
+    --a-line-soft: rgba(15, 23, 42, 0.09);
+    --a-ink: #101828;
+    --a-dim: #667085;
+    --a-faint: #98a2b3;
+    --a-blue: #1d4ed8;
+    --a-blue-lt: #3b82f6;
+
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--a-canvas);
+    color: var(--a-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+}
+
+.ad-display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.ad-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.ad-num {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- Sidebar ---------------- */
+.ad-side {
+    position: relative;
+    display: flex;
+    width: 248px;
+    flex: none;
+    flex-direction: column;
+    background-color: var(--a-chrome);
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 28px 28px;
+    border-right: 1px solid var(--a-line);
+}
+
+.ad-side-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--a-line);
+    padding: 20px 20px 18px;
+}
+
+.ad-side-logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    color: #eef2f8;
+}
+
+.ad-side-logo span {
+    color: var(--a-blue-lt);
+}
+
+.ad-side-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #6a7d9d;
+    border: 1px solid var(--a-line);
+    border-radius: 3px;
+    padding: 3px 7px 4px;
+}
+
+.ad-side-sec {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #3d4d68;
+    padding: 20px 20px 10px;
+}
+
+.ad-side-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 10px;
+}
+
+.ad-side-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    border-radius: 6px;
+    padding: 9px 10px 9px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8497b6;
+    text-decoration: none;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.ad-side-item svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+    opacity: 0.8;
+}
+
+.ad-side-item:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: #dbe5f5;
+}
+
+.ad-side-item.is-on {
+    background-color: #0f1a30;
+    color: #eef2f8;
+}
+
+/* Penanda aktif: bar biru di kiri, bukan pill penuh warna */
+.ad-side-item.is-on::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    border-radius: 999px;
+    background: var(--a-blue-lt);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+}
+
+.ad-side-item.is-on svg {
+    opacity: 1;
+    color: var(--a-blue-lt);
+}
+
+.ad-side-badge {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: #93a4c2;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    padding: 1px 5px 2px;
+}
+
+.ad-side-foot {
+    margin-top: auto;
+    border-top: 1px solid var(--a-line);
+    padding: 14px 10px;
+}
+
+.ad-side-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+}
+
+.ad-side-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    flex: none;
+    border-radius: 6px;
+    background: #132244;
+    color: #7fb2ff;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.ad-side-name {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #cdd9ec;
+    line-height: 1.2;
+}
+
+.ad-side-role {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #4f6180;
+    margin-top: 3px;
+}
+
+.ad-side-link {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #7d90b0;
+    text-decoration: none;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.ad-side-link:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: #cfdcef;
+}
+
+/* ---------------- Main ---------------- */
+.ad-main {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+}
+
+.ad-top {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid var(--a-line-soft);
+    background-color: rgba(255, 255, 255, 0.88);
+    padding: 13px 28px;
+    backdrop-filter: blur(8px);
+}
+
+.ad-crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--a-faint);
+}
+
+.ad-crumb b {
+    color: var(--a-ink);
+    font-weight: 700;
+}
+
+.ad-crumb i {
+    font-style: normal;
+    color: #d0d5dd;
+}
+
+.ad-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ad-btn-ghost,
+.ad-btn-solid {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 5px;
+    padding: 7px 11px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.ad-btn-ghost {
+    border: 1px solid var(--a-line-soft);
+    background: #fff;
+    color: #475467;
+}
+
+.ad-btn-ghost:hover {
+    border-color: var(--a-blue);
+    color: var(--a-blue);
+}
+
+.ad-btn-solid {
+    border: 1px solid var(--a-blue);
+    background: var(--a-blue);
+    color: #fff;
+}
+
+.ad-btn-solid:hover {
+    background: #1e40af;
+}
+
+/* ---------------- Page ---------------- */
+.ad-page {
+    padding: 28px;
+}
+
+.ad-page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--a-line-soft);
+}
+
+.ad-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--a-faint);
+}
+
+.ad-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.9rem;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 10px 0 0;
+    color: var(--a-ink);
+}
+
+.ad-title span {
+    color: var(--a-blue);
+}
+
+/* ---------------- Stat grid ---------------- */
+.ad-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 22px;
+    border: 1px solid var(--a-line-soft);
+    border-radius: 8px;
+    background: var(--a-line-soft);
+    overflow: hidden;
+}
+
+.ad-stat {
+    background: var(--a-card);
+    padding: 18px 20px 20px;
+}
+
+.ad-stat-k {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--a-faint);
+}
+
+.ad-stat-v {
+    display: block;
+    margin-top: 10px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.75rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--a-ink);
+}
+
+.ad-stat-d {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--a-dim);
+}
+
+.ad-stat-d.up { color: #067647; }
+.ad-stat-d.flat { color: var(--a-faint); }
+
+/* ---------------- Card ---------------- */
+.ad-card {
+    border: 1px solid var(--a-line-soft);
+    border-radius: 8px;
+    background: var(--a-card);
+}
+
+.ad-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--a-line-soft);
+    padding: 15px 20px;
+}
+
+.ad-card-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    color: var(--a-ink);
+}
+
+.ad-card-link {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--a-blue);
+    text-decoration: none;
+}
+
+.ad-card-link:hover {
+    text-decoration: underline;
+}
+
+/* ---------------- Table ---------------- */
+.ad-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.ad-tbl th {
+    border-bottom: 1px solid var(--a-line-soft);
+    padding: 10px 20px;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--a-faint);
+    white-space: nowrap;
+}
+
+.ad-tbl td {
+    padding: 12px 20px;
+    border-bottom: 1px solid #f2f4f7;
+    vertical-align: middle;
+}
+
+.ad-tbl tr:last-child td {
+    border-bottom: 0;
+}
+
+.ad-tbl tbody tr:hover {
+    background: #fafbfe;
+}
+
+.ad-tbl .ad-code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--a-blue);
+    text-decoration: none;
+}
+
+.ad-tbl .ad-code:hover {
+    text-decoration: underline;
+}
+
+.ad-tbl .ad-client {
+    font-weight: 700;
+    color: var(--a-ink);
+}
+
+.ad-tbl .ad-sub {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--a-faint);
+    margin-top: 2px;
+}
+
+.ad-tbl .ad-money {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* ---------------- Chip status ---------------- */
+.ad-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid;
+    border-radius: 4px;
+    padding: 3px 8px 4px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.ad-chip::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: currentColor;
+}
+
+.ad-chip.baru { color: #475467; border-color: #e4e7ec; background: #f9fafb; }
+.ad-chip.proses { color: #1d4ed8; border-color: #c7d7fe; background: #eff4ff; }
+.ad-chip.revisi { color: #b54708; border-color: #fedf89; background: #fffaeb; }
+.ad-chip.selesai { color: #067647; border-color: #abefc6; background: #ecfdf3; }
+.ad-chip.batal { color: #b42318; border-color: #fecdca; background: #fef3f2; }
+
+/* ---------------- Layout grid ---------------- */
+.ad-grid-2 {
+    display: grid;
+    grid-template-columns: 1.65fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.ad-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ---------------- Bar list ---------------- */
+.ad-bar-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+}
+
+.ad-bar-row + .ad-bar-row {
+    border-top: 1px solid #f6f7f9;
+}
+
+.ad-bar-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #344054;
+}
+
+.ad-bar-track {
+    height: 4px;
+    border-radius: 999px;
+    background: #eef1f6;
+    overflow: hidden;
+    margin-top: 7px;
+}
+
+.ad-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(to right, #1d4ed8, #60a5fa);
+}
+
+.ad-bar-val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: #475467;
+}
+
+/* ---------------- Summary list ---------------- */
+.ad-sum {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 20px;
+    font-size: 12.5px;
+    color: var(--a-dim);
+}
+
+.ad-sum + .ad-sum {
+    border-top: 1px solid #f6f7f9;
+}
+
+.ad-sum b {
+    color: var(--a-ink);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.ad-sum a {
+    color: var(--a-blue);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.ad-sum a:hover {
+    text-decoration: underline;
+}
+
+/* ---------------- Timeline ---------------- */
+.ad-tl {
+    padding: 6px 20px 18px 34px;
+    position: relative;
+}
+
+.ad-tl::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 14px;
+    bottom: 22px;
+    width: 1px;
+    background: #e4e7ec;
+}
+
+.ad-tl-item {
+    position: relative;
+    padding: 10px 0 10px 16px;
+}
+
+.ad-tl-node {
+    position: absolute;
+    left: -6px;
+    top: 14px;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1.5px solid #d0d5dd;
+}
+
+.ad-tl-item.on .ad-tl-node {
+    border-color: var(--a-blue);
+    background: var(--a-blue);
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+}
+
+.ad-tl-t {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--a-ink);
+}
+
+.ad-tl-d {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--a-faint);
+    margin-top: 3px;
+}
+
+/* ---------------- Note / alert ---------------- */
+.ad-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    border: 1px solid #c7d7fe;
+    border-radius: 6px;
+    background: #eff4ff;
+    padding: 11px 14px;
+    font-size: 12.5px;
+    color: #1e3a8a;
+}
+
+.ad-note b {
+    font-weight: 800;
+}
+
+.ad-alert {
+    margin-bottom: 18px;
+    border-radius: 6px;
+    border: 1px solid;
+    padding: 11px 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.ad-alert-ok {
+    border-color: #abefc6;
+    background: #ecfdf3;
+    color: #067647;
+}
+
+.ad-alert-err {
+    border-color: #fecdca;
+    background: #fef3f2;
+    color: #b42318;
+}
+
+/* ---------------- Form controls (admin) ---------------- */
+.ad-input,
+.ad-select,
+.ad-textarea {
+    width: 100%;
+    border: 1px solid #d0d5dd;
+    border-radius: 5px;
+    background: #fff;
+    padding: 8px 11px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--a-ink);
+    transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.ad-input:focus,
+.ad-select:focus,
+.ad-textarea:focus {
+    outline: none;
+    border-color: var(--a-blue);
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+}
+
+.ad-label {
+    display: block;
+    margin-bottom: 6px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--a-faint);
+}
+
+.ad-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 5px;
+    border: 1px solid var(--a-blue);
+    background: var(--a-blue);
+    padding: 8px 14px;
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.16s ease;
+}
+
+.ad-btn:hover {
+    background: #1e40af;
+}
+
+.ad-btn-sm {
+    padding: 5px 10px;
+    font-size: 11.5px;
+}
+
+.ad-btn-danger {
+    border-color: #fecdca;
+    background: #fef3f2;
+    color: #b42318;
+}
+
+.ad-btn-danger:hover {
+    background: #fee4e2;
+}
+
+/* ---------------- Grid kolom (responsif) ---------------- */
+.ad-cols-2,
+.ad-cols-3,
+.ad-form-2 {
+    display: grid;
+    gap: 16px;
+}
+
+.ad-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ad-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.ad-form-2 {
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ad-form-2 > .ad-span {
+    grid-column: 1 / -1;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 1100px) {
+    .ad-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .ad-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ad-cols-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 860px) {
+    .ad-side {
+        display: none;
+    }
+
+    .ad-page {
+        padding: 18px;
+    }
+
+    .ad-top {
+        padding: 12px 16px;
+    }
+
+    .ad-cols-2,
+    .ad-cols-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 620px) {
+    .ad-stats,
+    .ad-form-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .ad-title {
+        font-size: 1.55rem;
     }
 }

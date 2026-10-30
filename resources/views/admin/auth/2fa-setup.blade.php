@@ -6,77 +6,81 @@
     <title>Setup 2FA — JoeyDev Studio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f7f8fc] px-4 py-10 font-sans antialiased">
-    <svg class="pointer-events-none absolute inset-0 h-full w-full opacity-60" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#c7d2fe" stroke-width="1">
-            <line x1="10%" y1="15%" x2="22%" y2="30%"/><line x1="80%" y1="70%" x2="90%" y2="85%"/>
-            <line x1="75%" y1="20%" x2="88%" y2="32%"/>
-        </g>
-        <g>
-            <circle cx="10%" cy="15%" r="4" fill="#a5b4fc"/><circle cx="22%" cy="30%" r="3" fill="#f9a8d4"/>
-            <circle cx="80%" cy="70%" r="5" fill="#ddd6fe"/><circle cx="90%" cy="85%" r="3" fill="#6ee7b7"/>
-            <circle cx="75%" cy="20%" r="4" fill="#f9a8d4"/><circle cx="88%" cy="32%" r="3" fill="#a5b4fc"/>
-            <circle cx="15%" cy="75%" r="4" fill="#fcd34d"/>
-        </g>
-    </svg>
+<body class="relative flex min-h-screen items-center justify-center overflow-hidden bg-kertas px-4 py-10 font-sans antialiased">
+    <div class="jd-grid pointer-events-none absolute inset-0 opacity-70" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(720px_circle_at_50%_10%,rgba(29,78,216,0.24),transparent_66%)]" aria-hidden="true"></div>
 
     <div class="relative w-full max-w-lg">
         <div class="mb-7 text-center">
-            <p class="text-3xl font-extrabold tracking-tight text-slate-900">JD<span class="text-rose-500">.</span></p>
-            <h1 class="mt-2 text-2xl font-extrabold tracking-tight text-slate-900">Aktifkan <span class="bg-gradient-to-r from-violet-600 to-indigo-500 bg-clip-text text-transparent">2FA</span><span class="text-violet-600">.</span></h1>
-            <p class="mt-1 text-sm text-slate-500">Lindungi akun admin Anda dengan autentikasi dua faktor.</p>
+            <p class="ad-display text-2xl leading-none text-tinta">JD<span class="text-aksen-terang">.</span></p>
+            <h1 class="ad-display mt-3 text-[1.75rem] leading-none text-tinta">Aktifkan 2FA<span class="text-aksen-terang">.</span></h1>
+            <p class="mt-3 text-[12.5px] text-redup">Lindungi akun admin Anda dengan autentikasi dua faktor.</p>
         </div>
 
         @if (session('status'))
-            <div class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700">{{ session('status') }}</div>
+            <div class="mb-4 rounded border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2.5 text-[12.5px] font-medium text-emerald-300">
+                {{ session('status') }}
+            </div>
         @endif
 
-        <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-xl shadow-slate-900/5">
+        <div class="rounded-lg border border-garis bg-permukaan p-6 shadow-2xl shadow-black/50">
+
             <div class="text-center">
-                <div class="mx-auto inline-block rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div class="mx-auto inline-block rounded-lg border border-garis bg-white p-3">
                     <img src="{{ $qrCode }}" alt="QR Code 2FA" class="h-44 w-44">
                 </div>
-                <p class="mt-3 text-sm text-slate-500">
+                <p class="mx-auto mt-3 max-w-xs text-[12px] leading-relaxed text-redup">
                     Pindai kode QR ini dengan aplikasi authenticator
                     (Google Authenticator, Authy, dll.).
                 </p>
             </div>
 
             <div class="mt-6">
-                <label class="mb-1.5 block text-sm font-bold text-slate-700">Kunci rahasia</label>
-                <input type="text" readonly value="{{ $secret }}"
-                       class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-center text-sm font-mono tracking-widest text-slate-700">
+                <label for="secret" class="ad-mono mb-2 block text-[9.5px] uppercase tracking-[0.16em] text-[#5c6f8f]">Kunci rahasia</label>
+                <input id="secret" type="text" readonly value="{{ $secret }}"
+                       class="ad-mono w-full rounded border border-garis bg-[#070c17] px-3.5 py-2.5 text-center text-[12.5px] tracking-[0.18em] text-[#8fb4ff]">
             </div>
 
             <div class="mt-6">
-                <p class="mb-1.5 text-sm font-bold text-slate-700">Kode pemulihan (simpan dengan aman)</p>
-                <p class="mb-2 text-xs text-slate-500">Setiap kode hanya bisa dipakai sekali. Simpan di tempat terpisah dari ponsel Anda.</p>
-                <ul class="grid grid-cols-1 gap-2">
+                <p class="ad-mono mb-1.5 text-[9.5px] uppercase tracking-[0.16em] text-[#5c6f8f]">Kode pemulihan</p>
+                <p class="mb-3 text-[11.5px] leading-relaxed text-[#7d90b0]">
+                    Setiap kode hanya bisa dipakai sekali. Simpan di tempat terpisah dari ponsel Anda.
+                </p>
+                <ul class="grid grid-cols-1 gap-1.5">
                     @foreach ($recoveryCodes as $code)
-                        <li class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-center font-mono text-sm font-semibold tracking-widest text-slate-800">{{ $code }}</li>
+                        <li class="ad-mono rounded border border-garis bg-[#070c17] px-3.5 py-2 text-center text-[12.5px] font-semibold tracking-[0.16em] text-[#cdd9ec]">{{ $code }}</li>
                     @endforeach
                 </ul>
             </div>
 
-            <form method="POST" action="{{ route('admin.2fa.enable') }}" class="mt-6">
+            <form method="POST" action="{{ route('admin.2fa.enable') }}" class="mt-6 border-t border-garis pt-6">
                 @csrf
                 @error('code')
-                    <div class="mb-4 rounded-2xl bg-rose-50 px-4 py-2.5 text-sm font-medium text-rose-700">{{ $message }}</div>
+                    <div class="mb-4 rounded border border-rose-500/30 bg-rose-500/10 px-3.5 py-2.5 text-[12.5px] font-medium text-rose-300">
+                        {{ $message }}
+                    </div>
                 @enderror
-                <label class="mb-1.5 block text-sm font-bold text-slate-700">Ketikan kode 6 digit untuk konfirmasi</label>
-                <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code"
-                       value="{{ old('code') }}" required autofocus
-                       placeholder="000000"
-                       class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-center text-xl font-bold tracking-[0.5em] text-slate-900 transition focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-100">
+                <label for="code" class="ad-mono mb-2 block text-[9.5px] uppercase tracking-[0.16em] text-[#5c6f8f]">
+                    Ketik kode 6 digit untuk konfirmasi
+                </label>
+                <input id="code" type="text" name="code" inputmode="numeric" autocomplete="one-time-code"
+                       value="{{ old('code') }}" required autofocus maxlength="10" placeholder="000000"
+                       class="ad-mono w-full rounded border border-garis bg-[#070c17] px-3.5 py-3 text-center text-xl font-bold tracking-[0.5em] text-tinta placeholder:text-[#2f3d55] transition focus:border-aksen-terang focus:outline-none focus:ring-2 focus:ring-aksen-terang/25">
                 <button type="submit"
-                        class="mt-5 w-full rounded-full bg-violet-600 py-3.5 font-bold text-white shadow-lg shadow-violet-600/30 transition hover:-translate-y-0.5 hover:bg-violet-700">Aktifkan 2FA</button>
+                        class="mt-5 w-full rounded bg-aksen py-3 text-[13px] font-bold text-white transition hover:bg-[#1e40af] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aksen-terang focus-visible:ring-offset-2 focus-visible:ring-offset-permukaan">
+                    Aktifkan 2FA
+                </button>
             </form>
         </div>
 
-        <p class="mt-5 text-center text-sm"><a href="{{ route('admin.dashboard') }}" class="font-medium text-slate-400 transition hover:text-slate-600">&larr; Kembali ke dashboard</a></p>
+        <p class="mt-6 text-center">
+            <a href="{{ route('admin.dashboard') }}" class="ad-mono text-[10px] uppercase tracking-[0.14em] text-[#4f6180] transition-colors hover:text-redup">
+                &larr; Kembali ke dashboard
+            </a>
+        </p>
     </div>
 </body>
 </html>
