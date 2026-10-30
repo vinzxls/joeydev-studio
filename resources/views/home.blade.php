@@ -355,13 +355,15 @@
         })();
 
         // --- Pita kata kunci ---
-        // Satu kelompok digandakan sampai lebih lebar dari layar, lalu
-        // kelompok itu disalin sekali lagi. Track jadi tepat 2x kelompok,
-        // sehingga animasi translateX(-50%) selalu mulus tanpa lompatan.
+        // Desktop: kelompok digandakan sampai lebih lebar dari layar, lalu
+        // disalin sekali lagi supaya animasi translateX(-50%) mulus.
+        // Mobile: pita statis (lihat media query di app.css), jadi tidak
+        // digandakan sama sekali agar semua kata tampil utuh.
         (function () {
             var track = document.getElementById('jd-strip');
             var group = document.getElementById('jd-strip-group');
             if (!track || !group) return;
+            if (window.matchMedia('(max-width: 768px)').matches) return;
 
             var asli = group.innerHTML;
             var lebarTarget = window.innerWidth * 1.15;

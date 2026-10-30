@@ -185,17 +185,19 @@
     animation-play-state: paused;
 }
 
-/* Pita kata kunci editorial (di bawah hero). */
+/* =========================================================================
+   Pita kata kunci di bawah hero.
+   Desktop: berjalan sebagai marquee. Mobile: statis dan terlipat, karena di
+   layar sempit marquee selalu menyisakan kata yang terpotong di tepi.
+   ========================================================================= */
 .jd-strip {
     border-top: 1px solid var(--color-garis);
     border-bottom: 1px solid var(--color-garis);
     background: linear-gradient(90deg, rgba(10, 16, 32, 0), rgba(13, 21, 40, 0.75), rgba(10, 16, 32, 0));
     padding: 26px 0;
     overflow: hidden;
-    /* Tepi kiri-kanan dilembutkan supaya kata yang masuk/keluar tidak
-       terlihat terpotong paksa. */
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
 }
 
 .jd-strip-track {
@@ -205,25 +207,24 @@
     will-change: transform;
 }
 
-/* Satu kelompok berisi kata kunci yang sudah digandakan hingga melewati
-   lebar layar. Ada dua kelompok identik di dalam track, jadi geseran -50%
-   kembali tepat ke titik awal tanpa lompatan. */
+/* Satu kelompok berisi kata kunci (sudah digandakan oleh JS sampai lebih
+   lebar dari layar). Ada dua kelompok identik, jadi -50% kembali tepat. */
 .jd-strip-group {
     display: flex;
     align-items: center;
-    gap: 34px;
-    padding-right: 34px;
+    gap: 38px;
+    padding-right: 38px;
     flex: none;
-}
-
-.jd-strip:hover .jd-strip-track {
-    animation-play-state: paused;
 }
 
 @keyframes jd-strip-slide {
     to {
         transform: translateX(-50%);
     }
+}
+
+.jd-strip:hover .jd-strip-track {
+    animation-play-state: paused;
 }
 
 .jd-strip-word {
@@ -234,6 +235,7 @@
     text-transform: uppercase;
     white-space: nowrap;
     font-variation-settings: 'wdth' 90;
+    flex: none;
 }
 
 .jd-strip-word--solid {
@@ -242,7 +244,47 @@
 
 .jd-strip-word--hollow {
     color: transparent;
-    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.32);
+}
+
+/* --- Mobile: berhenti berjalan, semua kata tampil utuh --- */
+@media (max-width: 768px) {
+    .jd-strip {
+        padding: 22px 16px;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    .jd-strip-track {
+        width: 100%;
+        animation: none;
+        transform: none;
+    }
+
+    /* Kelompok salinan kedua tidak diperlukan saat statis. */
+    .jd-strip-group:nth-child(2) {
+        display: none;
+    }
+
+    .jd-strip-group {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px 16px;
+        padding-right: 0;
+        width: 100%;
+    }
+
+    /* Titik pemisah jadi pengganggu saat teks terlipat — sembunyikan,
+       ganti dengan jarak saja. */
+    .jd-strip-dot {
+        display: none;
+    }
+
+    .jd-strip-word {
+        font-size: clamp(1.05rem, 5.2vw, 1.6rem);
+        letter-spacing: -0.015em;
+        line-height: 1.15;
+    }
 }
 
 .jd-strip-dot {
